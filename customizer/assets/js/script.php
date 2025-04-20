@@ -5,7 +5,26 @@
         let selectedSection = null;
         let activeSectionId = null;
         let sectionsList = [];
-        
+        let isMediaLibraryOpening = false;
+        document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM loaded");
+    
+    // בדוק אם ספריית המדיה נטענה
+    if (window.mediaLibrary && typeof window.mediaLibrary.open === 'function') {
+        console.log("Media library loaded successfully");
+    } else {
+        console.error("Media library not loaded properly");
+    }
+    
+    // בדוק שמודל המדיה קיים בדף
+    const mediaModal = document.getElementById('media-library-modal');
+    if (mediaModal) {
+        console.log("Media modal found in page");
+    } else {
+        console.error("Media modal not found in page");
+    }
+});
+
         // Color schemes
         const colorSchemes = <?php echo json_encode($colorSchemes); ?>;
         const availableTemplates = <?php echo json_encode(getAvailableTemplates()); ?>;
@@ -74,9 +93,186 @@
                 
                 // Populate sections list in sidebar
                 populateSectionsList();
-                
+                setupImageEvents(iframeDoc);
             }, 500);
         }
+
+
+        function getLandingPageId() {
+    // חילוץ מזהה דף הנחיתה מה-URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const landingPageId = urlParams.get('id');
+    
+    console.log("Extracted landing page ID:", landingPageId);
+    
+    // בדיקה אם המזהה קיים וחוקי
+    if (!landingPageId || isNaN(parseInt(landingPageId))) {
+        console.error('מזהה דף נחיתה חסר או לא תקין');
+        return null;
+    }
+    
+    return landingPageId;
+}
+
+        function setupImageEvents(iframeDoc) {
+    if (!iframeDoc) return;
+    
+    // טיפול בתמונות תוך מניעת אירועים כפולים
+    const iframeImages = iframeDoc.querySelectorAll('img');
+    
+    iframeImages.forEach(image => {
+        // הוספת סמן מיוחד בעת מעבר עכבר
+        image.style.cursor = 'pointer';
+        
+        // הסרת אירועים קודמים
+        const newImage = image.cloneNode(true);
+        if (image.parentNode) {
+            image.parentNode.replaceChild(newImage, image);
+        }
+        
+        // הגדרת מיקום יחסי להורה אם צריך
+        if (newImage.parentNode && getComputedStyle(newImage.parentNode).position === 'static') {
+            newImage.parentNode.style.position = 'relative';
+        }
+        
+        // הסרת overlay קיים אם יש
+        if (newImage.parentNode) {
+            const existingOverlay = newImage.parentNode.querySelector('.image-edit-overlay');
+            if (existingOverlay) {
+                existingOverlay.remove();
+            }
+            
+            // יצירת overlay חדש
+            const overlay = document.createElement('div');
+            overlay.className = 'image-edit-overlay';
+            overlay.style.position = 'absolute';
+            overlay.style.inset = '0';
+            overlay.style.backgroundColor = 'rgba(79, 70, 229, 0.2)';
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.2s';
+            overlay.style.marginLeft = '40px';
+            overlay.style.pointerEvents = 'none';
+
+            
+            const icon = document.createElement('div');
+            icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="white"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>';
+            overlay.appendChild(icon);
+            
+            newImage.parentNode.appendChild(overlay);
+            
+            // אירועי המעבר של העכבר
+            newImage.addEventListener('mouseover', () => {
+                overlay.style.opacity = '1';
+            });
+            
+            newImage.addEventListener('mouseout', () => {
+                overlay.style.opacity = '0';
+            });
+            
+            // אירוע לחיצה על התמונה
+            newImage.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isMediaLibraryOpening) return;
+    isMediaLibraryOpening = true;
+    
+    // הדפס את מזהה דף הנחיתה לבדיקה
+    const landingPageId = getLandingPageId();
+    console.log("Landing page ID:", landingPageId);
+    
+    if (!landingPageId) {
+        alert('לא נמצא מזהה דף נחיתה');
+        isMediaLibraryOpening = false;
+        return;
+    }
+    
+    // פתיחת ספריית המדיה
+    window.mediaLibrary.open(landingPageId, (newImageUrl) => {
+        if (newImageUrl) {
+            newImage.src = newImageUrl;
+            currentContent = iframeDoc.documentElement.outerHTML;
+        }
+        isMediaLibraryOpening = false;
+    });
+});
+
+        }
+    });
+}
+
+
+
+function setupImageControlButtons() {
+    console.log("Setting up image control buttons");
+    // מצא את כל כפתורי החלפת התמונה באזור העריכה
+    const replaceImageButtons = document.querySelectorAll('#section-controls button');
+    
+    replaceImageButtons.forEach(button => {
+        // בדוק אם הכפתור הוא כפתור החלפת תמונה
+        if (button.textContent && button.textContent.includes('החלף תמונה')) {
+            console.log("Found replace image button:", button.textContent);
+            
+            // הסר אירועים קודמים
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+            
+            // הוסף אירוע לחיצה חדש
+            newButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log("Replace image button clicked");
+                
+                if (isMediaLibraryOpening) return;
+                isMediaLibraryOpening = true;
+                
+                // קבלת מזהה דף נחיתה
+                const landingPageId = getLandingPageId();
+                console.log("Replace image using landing page ID:", landingPageId);
+                
+                if (!landingPageId) {
+                    alert('לא נמצא מזהה דף נחיתה');
+                    isMediaLibraryOpening = false;
+                    return;
+                }
+                
+                // מצא את אובייקט התמונה הרלוונטי
+                const imageControlDiv = newButton.closest('div[class*="bg-gray-50"]');
+                if (!imageControlDiv) {
+                    console.error("Could not find image control div");
+                    isMediaLibraryOpening = false;
+                    return;
+                }
+                
+                const previewImg = imageControlDiv.querySelector('img');
+                const urlInput = imageControlDiv.querySelector('input[data-target^="image-src"]');
+                
+                // שימוש ב-window.mediaLibrary.open במקום mediaLibrary.open
+                window.mediaLibrary.open(landingPageId, (newImageUrl) => {
+                    console.log("Image selected:", newImageUrl);
+                    if (newImageUrl) {
+                        // עדכון התמונה בתצוגה
+                        if (previewImg) {
+                            previewImg.src = newImageUrl;
+                        }
+                        
+                        // עדכון שדה ה-URL
+                        if (urlInput) {
+                            urlInput.value = newImageUrl;
+                            
+                            // הפעלת אירוע input כדי לעדכן את התמונה באיפריים
+                            const inputEvent = new Event('input', { bubbles: true });
+                            urlInput.dispatchEvent(inputEvent);
+                        }
+                    }
+                    isMediaLibraryOpening = false;
+                });
+            });
+        }
+    });
+}
         
         // Populate sections list in sidebar
         function initDraggableSections() {
@@ -444,6 +640,43 @@ document.addEventListener('DOMContentLoaded', () => {
     document.head.appendChild(style);
 });
         
+// הוספת אירועי לחיצה למודל המדיה
+const closeMediaBtn = document.getElementById('close-media-library');
+    if (closeMediaBtn) {
+        closeMediaBtn.addEventListener('click', () => {
+            const mediaModal = document.getElementById('media-library-modal');
+            if (mediaModal) {
+                mediaModal.classList.add('hidden');
+                isMediaLibraryOpening = false;
+            }
+        });
+    }
+
+    // אירוע לסגירת המודל בלחיצה על האזור האפור
+    const mediaModal = document.getElementById('media-library-modal');
+    if (mediaModal) {
+        mediaModal.addEventListener('click', (event) => {
+            if (event.target === mediaModal) {
+                mediaModal.classList.add('hidden');
+                isMediaLibraryOpening = false;
+            }
+        });
+    }
+
+// הוספת אירועי לחיצה על תמונות בספריית המדיה
+const mediaItems = document.querySelectorAll('#media-grid .media-item');
+mediaItems.forEach(item => {
+    item.addEventListener('click', () => {
+        if (mediaLibrary._currentCallback) {
+            const imageUrl = item.getAttribute('data-url');
+            if (imageUrl) {
+                mediaLibrary._currentCallback(imageUrl);
+                mediaLibrary.close();
+            }
+        }
+    });
+});
+
         // Select a section for editing
         function selectSection(section, index) {
             const iframe = document.getElementById('preview-iframe');
@@ -499,6 +732,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const buttons = section.querySelectorAll('a.btn, button, a.button, .btn, .button, a[class*="bg-"]');
             const images = section.querySelectorAll('img');
             
+            // טיפול בלחיצות על תמונות
+            setupImageEvents(iframeDoc);
+
             // Title controls
             if (headings.length > 0) {
                 headings.forEach((heading, index) => {
@@ -649,6 +885,151 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentContent = iframeDoc.documentElement.outerHTML;
                 }
             });
+
+            const sectionImages = section.querySelectorAll('img');
+            setupImageControlButtons();
+            if (sectionImages.length > 0) {
+                controlsContainer.appendChild(document.createElement('hr'));
+                
+                const imageHeader = document.createElement('h3');
+                imageHeader.className = 'text-sm font-medium text-gray-700 my-3';
+                imageHeader.textContent = 'תמונות';
+                controlsContainer.appendChild(imageHeader);
+                
+                sectionImages.forEach((image, index) => {
+                    const imageControlDiv = document.createElement('div');
+                    imageControlDiv.className = 'bg-gray-50 p-3 rounded-lg mb-3 relative';
+                    
+                    // תצוגה מקדימה
+                    const imagePreview = document.createElement('div');
+                    imagePreview.className = 'flex justify-center mb-2';
+                    imagePreview.innerHTML = `
+                        <div class="relative w-full h-24 overflow-hidden rounded border border-gray-300">
+                            <img src="${image.src}" class="object-contain w-full h-full" alt="תצוגה מקדימה">
+                        </div>
+                    `;
+                    imageControlDiv.appendChild(imagePreview);
+                    
+                    // שדה URL
+                    const urlInputGroup = document.createElement('div');
+                    urlInputGroup.className = 'mb-2';
+                    urlInputGroup.innerHTML = `
+                        <label class="block text-xs font-medium text-gray-700 mb-1">כתובת התמונה</label>
+                        <input type="text" class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500" 
+                            value="${image.src}" data-target="image-src-${index}">
+                    `;
+                    imageControlDiv.appendChild(urlInputGroup);
+                    
+                    // שדה לטקסט חלופי
+                    const altInputGroup = document.createElement('div');
+                    altInputGroup.className = 'mb-2';
+                    altInputGroup.innerHTML = `
+                        <label class="block text-xs font-medium text-gray-700 mb-1">טקסט חלופי</label>
+                        <input type="text" class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500" 
+                            value="${image.alt || ''}" data-target="image-alt-${index}">
+                    `;
+                    imageControlDiv.appendChild(altInputGroup);
+                    
+                   // כפתור החלפת תמונה
+                const uploadButton = document.createElement('button');
+                uploadButton.className = 'w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-3 rounded text-sm flex items-center justify-center';
+                uploadButton.innerHTML = '<i class="ri-image-add-line ml-1"></i> החלף תמונה';
+                uploadButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // מניעת פתיחות מרובות מהירות
+                    if (isMediaLibraryOpening) return;
+                    isMediaLibraryOpening = true;
+                    
+                    // קבלת מזהה דף נחיתה
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const landingPageId = urlParams.get('id');
+                    
+                    if (!landingPageId) {
+                        alert('לא נמצא מזהה דף נחיתה');
+                        isMediaLibraryOpening = false;
+                        return;
+                    }
+                    
+                    // פתיחת ספריית המדיה
+                    const mediaModal = document.getElementById('media-library-modal');
+                    if (mediaModal) {
+                        mediaModal.classList.remove('hidden');
+                        
+                        // שמירת פונקציית callback לעדכון התמונה לאחר בחירה
+                        window._currentImageCallback = (newImageUrl) => {
+                            if (newImageUrl) {
+                                // עדכון התמונה
+                                image.src = newImageUrl;
+                                
+                                // עדכון התצוגה המקדימה
+                                const previewImg = imagePreview.querySelector('img');
+                                if (previewImg) previewImg.src = newImageUrl;
+                                
+                                // עדכון שדה URL
+                                const urlInput = urlInputGroup.querySelector('input');
+                                if (urlInput) urlInput.value = newImageUrl;
+                                
+                                // עדכון התוכן הכללי
+                                currentContent = iframeDoc.documentElement.outerHTML;
+                            }
+                            
+                            // סגירת המודל
+                            mediaModal.classList.add('hidden');
+                            isMediaLibraryOpening = false;
+                        };
+                        
+                        // הוספת אירועי לחיצה לתמונות במודל המדיה
+                        setTimeout(() => {
+                            const mediaItems = document.querySelectorAll('#media-grid .media-item');
+                            mediaItems.forEach(item => {
+                                // הסרת אירועים קודמים
+                                const newItem = item.cloneNode(true);
+                                if (item.parentNode) {
+                                    item.parentNode.replaceChild(newItem, item);
+                                }
+                                
+                                // הוספת אירוע חדש
+                                newItem.addEventListener('click', () => {
+                                    const imageUrl = newItem.getAttribute('data-url');
+                                    if (imageUrl && window._currentImageCallback) {
+                                        window._currentImageCallback(imageUrl);
+                                    }
+                                });
+                            });
+                        }, 300);
+                    } else {
+                        console.error("Media library modal not found");
+                        alert("אירעה שגיאה: מודל ספריית המדיה לא נמצא");
+                        isMediaLibraryOpening = false;
+                    }
+                });
+                imageControlDiv.appendChild(uploadButton);
+
+                    // הוספת מאזינים לשינויים בשדות
+                    const urlInput = urlInputGroup.querySelector('input');
+                    const altInput = altInputGroup.querySelector('input');
+                    
+                    urlInput.addEventListener('input', () => {
+                        image.src = urlInput.value;
+                        const previewImg = imagePreview.querySelector('img');
+                        if (previewImg) previewImg.src = urlInput.value;
+                        
+                        // עדכון התוכן
+                        currentContent = iframeDoc.documentElement.outerHTML;
+                    });
+                    
+                    altInput.addEventListener('input', () => {
+                        image.alt = altInput.value;
+                        
+                        // עדכון התוכן
+                        currentContent = iframeDoc.documentElement.outerHTML;
+                    });
+                    
+                    controlsContainer.appendChild(imageControlDiv);
+                });
+            }
+
         }
         
         // Convert RGB to Hex
@@ -1433,4 +1814,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setupModalOverlayClose(modalId);
     });
 });
+
+
+
+
     </script>

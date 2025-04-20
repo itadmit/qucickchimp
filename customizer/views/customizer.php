@@ -62,6 +62,7 @@
             </button>
         </div>
     </div>
+    <script src="../customizer/assets/js/upload.js"></script>
 </header>
     
     <div class="flex">
@@ -296,6 +297,70 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Media Library Modal -->
+    <div id="media-library-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-xl w-4/5 h-4/5 flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center">
+                <h3 class="text-lg font-medium">ספריית מדיה</h3>
+                <button id="close-media-library" class="text-gray-500 hover:text-gray-700">
+                    <i class="ri-close-line text-xl"></i>
+                </button>
+            </div>
+            <div class="flex flex-1 overflow-hidden">
+                <!-- Left Column - Media Grid -->
+                <div class="w-3/4 p-4 overflow-y-auto" id="media-grid-container">
+                    <div class="mb-4 flex justify-between">
+                        <h4 class="text-gray-700 font-medium">תמונות קיימות</h4>
+                        <div class="flex">
+                            <input type="text" id="media-search" placeholder="חיפוש..." class="px-3 py-1 border border-gray-300 rounded-md mr-2">
+                            <button id="refresh-media" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md">
+                                <i class="ri-refresh-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="media-grid" class="grid grid-cols-4 gap-4">
+                        <!-- Media items will be loaded here -->
+                        <div class="text-center py-10 text-gray-500 col-span-4">
+                            <i class="ri-loader-4-line animate-spin text-3xl mb-2"></i>
+                            <p>טוען תמונות...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column - Upload -->
+                <div class="w-1/4 border-r p-4 bg-gray-50">
+                    <h4 class="text-gray-700 font-medium mb-4">העלאת תמונה חדשה</h4>
+                    
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center mb-4">
+                        <div id="upload-preview" class="hidden mb-4">
+                            <img src="" alt="תצוגה מקדימה" class="max-h-40 mx-auto">
+                        </div>
+                        
+                        <div id="upload-placeholder">
+                            <i class="ri-image-add-line text-4xl text-gray-400 mb-2"></i>
+                            <p class="text-sm text-gray-500">גרור תמונה לכאן או לחץ לבחירה</p>
+                        </div>
+                        
+                        <input type="file" id="media-upload-input" class="hidden" accept="image/jpeg,image/png,image/gif,image/webp">
+                    </div>
+                    
+                    <button id="upload-media-button" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                        העלאת תמונה
+                    </button>
+                    
+                    <div class="mt-4 text-sm text-gray-500">
+                        <p>פורמטים נתמכים: JPG, PNG, GIF, WebP</p>
+                        <p>גודל מקסימלי: 5MB</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
     
     <!-- HTML Editor Modal -->
     <div id="html-editor-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
@@ -356,6 +421,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
+<script src="../customizer/assets/js/upload.js"></script>
+<script src="../customizer/assets/js/media-library.js"></script>
 
     <?php include '../customizer/assets/js/script.php'; ?>
 

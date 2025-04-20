@@ -59,3 +59,17 @@ require_once ROOT_PATH . '/config/db.php';
 
 // Include common functions
 require_once INCLUDES_PATH . '/functions.php';
+
+// Media upload settings
+define('UPLOAD_DIR', ROOT_PATH . '/uploads');
+define('UPLOAD_URL', APP_URL . '/uploads');
+define('UPLOAD_MAX_SIZE', 5 * 1024 * 1024); // 5MB
+define('UPLOAD_ALLOWED_TYPES', ['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
+
+// S3 Configuration (עבור סביבת ייצור)
+define('USE_S3_STORAGE', false); // שנה ל-true בסביבת ייצור
+define('S3_BUCKET', 'your-bucket-name');
+define('S3_REGION', 'your-region');
+define('S3_ACCESS_KEY', 'your-access-key');
+define('S3_SECRET_KEY', 'your-secret-key');
+define('S3_URL', 'https://your-bucket-name.s3.your-region.amazonaws.com');
