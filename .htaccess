@@ -1,0 +1,42 @@
+RewriteEngine On
+RewriteBase /
+
+# Handle landing page URLs
+RewriteRule ^landing/([^/]+)/?$ landing/index.php?slug=$1 [L,QSA]
+
+# Prevent direct access to PHP files in certain directories
+RewriteRule ^config/.+\.php$ - [F,L]
+RewriteRule ^includes/.+\.php$ - [F,L]
+
+# PHP error handling
+php_flag display_errors Off
+php_flag log_errors On
+php_value error_log /path/to/your/error.log
+
+# Set default character set
+AddDefaultCharset UTF-8
+
+# Enable compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
+</IfModule>
+
+# Set security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Set expiration for static content
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+</IfModule>

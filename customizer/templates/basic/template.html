@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דף נחיתה בסיסי</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Heebo', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section id="hero" class="bg-indigo-600 text-white py-16" data-section-type="hero-1" data-title="כותרת ראשית">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">כותרת ראשית מרשימה</h1>
+            <p class="text-xl mb-8 max-w-3xl mx-auto">תיאור קצר ומושך שמסביר את הערך המרכזי של המוצר או השירות שלך</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#contact" class="bg-white text-indigo-600 px-6 py-3 rounded-lg font-bold text-lg hover:bg-gray-100 transition duration-300">צור קשר</a>
+                <a href="#features" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-white hover:bg-opacity-10 transition duration-300">למידע נוסף</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 bg-white" data-section-type="features-1" data-title="יתרונות בפורמט מספרים">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-2 text-gray-800">היתרונות שלנו</h2>
+            <p class="text-xl mb-12 text-gray-600 max-w-3xl mx-auto">הסיבות שהלקוחות בוחרים בנו שוב ושוב</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="p-6 bg-gray-50 rounded-lg transition duration-300 hover:shadow-md">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-indigo-600">1</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-800">יתרון ראשון</h3>
+                    <p class="text-gray-600">תיאור של היתרון הראשון שמציע הפתרון שלך ללקוחות</p>
+                </div>
+                
+                <div class="p-6 bg-gray-50 rounded-lg transition duration-300 hover:shadow-md">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-indigo-600">2</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-800">יתרון שני</h3>
+                    <p class="text-gray-600">תיאור של היתרון השני שמציע הפתרון שלך ללקוחות</p>
+                </div>
+                
+                <div class="p-6 bg-gray-50 rounded-lg transition duration-300 hover:shadow-md">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl font-bold text-indigo-600">3</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-800">יתרון שלישי</h3>
+                    <p class="text-gray-600">תיאור של היתרון השלישי שמציע הפתרון שלך ללקוחות</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-gray-50" data-section-type="contact-1" data-title="צור קשר - טופס פשוט">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2 text-gray-800">צור קשר</h2>
+                <p class="text-xl text-gray-600">השאירו פרטים ונחזור אליכם בהקדם</p>
+            </div>
+            
+            <div class="max-w-lg mx-auto bg-white rounded-lg shadow-md p-8">
+                <form action="#" method="post">
+                    <div class="mb-4">
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">שם מלא</label>
+                        <input type="text" id="name" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">אימייל</label>
+                        <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">טלפון</label>
+                        <input type="tel" id="phone" name="phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="message" class="block text-sm font-medium text-gray-700 mb-1">הודעה</label>
+                        <textarea id="message" name="message" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    </div>
+                    
+                    <div>
+                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">שלח הודעה</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer id="footer" class="bg-gray-800 text-white py-8" data-section-type="footer-1" data-title="פוטר פשוט">
+        <div class="container mx-auto px-4 text-center">
+            <div class="mb-4">
+                <h3 class="text-xl font-bold mb-2">שם העסק שלך</h3>
+                <p class="text-gray-400">הפתרון המושלם לעסקים</p>
+            </div>
+            
+            <div class="flex justify-center space-x-4 rtl:space-x-reverse mb-6">
+                <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                    <i class="ri-facebook-fill text-xl"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                    <i class="ri-instagram-line text-xl"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                    <i class="ri-twitter-fill text-xl"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                    <i class="ri-linkedin-fill text-xl"></i>
+                </a>
+            </div>
+            
+            <p class="text-gray-400 text-sm">&copy; 2023 שם העסק שלך. כל הזכויות שמורות.</p>
+        </div>
+    </footer>
+</body>
+</html>

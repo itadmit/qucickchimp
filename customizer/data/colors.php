@@ -1,0 +1,60 @@
+<?php
+// Get available color schemes
+$colorSchemes = [
+    'default' => [
+        'name' => 'ברירת מחדל',
+        'primary' => '#6366f1',
+        'secondary' => '#4f46e5',
+        'accent' => '#ec4899',
+        'background' => '#ffffff',
+        'text' => '#111827',
+    ],
+    'purple' => [
+        'name' => 'סגול',
+        'primary' => '#8b5cf6',
+        'secondary' => '#7c3aed',
+        'accent' => '#d946ef',
+        'background' => '#ffffff',
+        'text' => '#111827',
+    ],
+    'blue' => [
+        'name' => 'כחול',
+        'primary' => '#3b82f6',
+        'secondary' => '#2563eb',
+        'accent' => '#06b6d4',
+        'background' => '#ffffff',
+        'text' => '#111827',
+    ],
+    'green' => [
+        'name' => 'ירוק',
+        'primary' => '#10b981',
+        'secondary' => '#059669',
+        'accent' => '#14b8a6',
+        'background' => '#ffffff',
+        'text' => '#111827',
+    ],
+    'orange' => [
+        'name' => 'כתום',
+        'primary' => '#f97316',
+        'secondary' => '#ea580c',
+        'accent' => '#f59e0b',
+        'background' => '#ffffff',
+        'text' => '#111827',
+    ],
+    'red' => [
+        'name' => 'אדום',
+        'primary' => '#ef4444',
+        'secondary' => '#dc2626',
+        'accent' => '#f43f5e',
+        'background' => '#ffffff',
+        'text' => '#111827',
+    ],
+    'dark' => [
+        'name' => 'כהה',
+        'primary' => '#6366f1',
+        'secondary' => '#4f46e5',
+        'accent' => '#ec4899',
+        'background' => '#111827',
+        'text' => '#f9fafb',
+    ],
+];

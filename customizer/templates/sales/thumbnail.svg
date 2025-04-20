@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200">
+  <!-- רקע גרדיאנט -->
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- רקע -->
+  <rect width="300" height="200" fill="#f9fafb" />
+  
+  <!-- כותרת עם רקע גרדיאנט -->
+  <rect x="0" y="0" width="300" height="70" fill="url(#grad1)" />
+  <text x="150" y="30" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle" font-weight="bold">המוצר שישנה את חייכם</text>
+  <rect x="110" y="45" width="80" height="15" fill="white" rx="10" />
+  <text x="150" y="56" font-family="Arial, sans-serif" font-size="8" fill="#6366f1" text-anchor="middle">רכשו עכשיו</text>
+  
+  <!-- יתרונות -->
+  <rect x="20" y="80" width="80" height="40" fill="white" stroke="#e5e7eb" rx="4" />
+  <rect x="110" y="80" width="80" height="40" fill="white" stroke="#e5e7eb" rx="4" />
+  <rect x="200" y="80" width="80" height="40" fill="white" stroke="#e5e7eb" rx="4" />
+  <circle cx="60" cy="90" r="8" fill="#e0e7ff" />
+  <circle cx="150" cy="90" r="8" fill="#e0e7ff" />
+  <circle cx="240" cy="90" r="8" fill="#e0e7ff" />
+  <text x="60" y="105" font-family="Arial, sans-serif" font-size="8" fill="#374151" text-anchor="middle">יתרון 1</text>
+  <text x="150" y="105" font-family="Arial, sans-serif" font-size="8" fill="#374151" text-anchor="middle">יתרון 2</text>
+  <text x="240" y="105" font-family="Arial, sans-serif" font-size="8" fill="#374151" text-anchor="middle">יתרון 3</text>
+  
+  <!-- מחירים -->
+  <rect x="20" y="130" width="80" height="60" fill="white" stroke="#e5e7eb" rx="4" />
+  <rect x="110" y="130" width="80" height="60" fill="white" stroke="#6366f1" stroke-width="2" rx="4" />
+  <rect x="200" y="130" width="80" height="60" fill="white" stroke="#e5e7eb" rx="4" />
+  <rect x="110" y="130" width="80" height="10" fill="#6366f1" rx="4" />
+  <text x="150" y="138" font-family="Arial, sans-serif" font-size="7" fill="white" text-anchor="middle">פופולרי</text>
+  <text x="60" y="155" font-family="Arial, sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">₪99</text>
+  <text x="150" y="155" font-family="Arial, sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">₪199</text>
+  <text x="240" y="155" font-family="Arial, sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">₪299</text>
+  <text x="60" y="170" font-family="Arial, sans-serif" font-size="8" fill="#6b7280" text-anchor="middle">בסיסי</text>
+  <text x="150" y="170" font-family="Arial, sans-serif" font-size="8" fill="#6b7280" text-anchor="middle">פרו</text>
+  <text x="240" y="170" font-family="Arial, sans-serif" font-size="8" fill="#6b7280" text-anchor="middle">פרימיום</text>
+</svg>

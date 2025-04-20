@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דף נחיתה למכירות</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Heebo', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section id="hero" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-20" data-section-type="hero-3" data-title="כותרת עם רקע גרדיאנטי">
+        <div class="container mx-auto px-4 text-center">
+            <span class="inline-block bg-white text-indigo-600 rounded-full px-4 py-1 text-sm font-bold mb-4">מבצע מיוחד לזמן מוגבל</span>
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">המוצר שישנה את חייכם</h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">פתרון מהפכני שפותר את הבעיה המרכזית של הלקוחות שלכם ומספק תוצאות מיידיות</p>
+            
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <a href="#pricing" class="bg-white text-indigo-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition duration-300 shadow-md">רכשו עכשיו</a>
+                <a href="#features" class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-indigo-600 transition duration-300">גלו עוד</a>
+            </div>
+            
+            <div class="mt-8 text-sm opacity-80">
+                <p>הצטרפו ל-5,000+ לקוחות מרוצים</p>
+            </div>
+            
+            <div class="mt-8 flex justify-center items-center space-x-8 rtl:space-x-reverse">
+                <div class="h-12 bg-white opacity-30" style="border:0px"></div>
+                <div class="text-center">
+                    <span class="block text-4xl font-bold">97%</span>
+                    <span class="text-sm opacity-80">שביעות רצון</span>
+                </div>
+
+                <div class="h-12 w-px bg-white opacity-30"></div>
+                <div class="text-center">
+                    <span class="block text-4xl font-bold">24/7</span>
+                    <span class="text-sm opacity-80">תמיכה זמינה</span>
+                </div>
+                <div class="h-12 w-px bg-white opacity-30"></div>
+                <div class="text-center">
+                    <span class="block text-4xl font-bold">30+</span>
+                    <span class="text-sm opacity-80">ימי ניסיון</span>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 bg-white" data-section-type="features-2" data-title="יתרונות המוצר">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-2 text-gray-800">יתרונות המוצר שלנו</h2>
+            <p class="text-xl mb-12 text-gray-600 max-w-3xl mx-auto">הסיבות שהמוצר שלנו הוא הפתרון הטוב ביותר עבורכם</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="p-6 transition duration-300 hover:shadow-md">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ri-timer-line text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-800">חוסך זמן</h3>
+                    <p class="text-gray-600">מאפשר לכם לחסוך שעות עבודה יקרות בכל שבוע</p>
+                </div>
+                
+                <div class="p-6 transition duration-300 hover:shadow-md">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ri-secure-payment-line text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-800">חוסך כסף</h3>
+                    <p class="text-gray-600">ההשקעה מחזירה את עצמה תוך פחות מחודש</p>
+                </div>
+                
+                <div class="p-6 transition duration-300 hover:shadow-md">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ri-rocket-line text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-800">מגביר יעילות</h3>
+                    <p class="text-gray-600">מאפשר לכם להגדיל את התפוקה ב-200% לפחות</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Showcase -->
+    <section id="about" class="py-16 bg-gray-50" data-section-type="about-1" data-title="מידע על המוצר">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap items-center">
+                <div class="w-full md:w-1/2 mb-10 md:mb-0 md:order-last">
+                    <h2 class="text-3xl font-bold mb-4 text-gray-800">איך המוצר שלנו עובד</h2>
+                    <p class="text-lg mb-6 text-gray-600">המוצר שלנו משתמש בטכנולוגיה מתקדמת כדי לספק תוצאות מהירות ויעילות. בעזרת ממשק משתמש פשוט וידידותי, כל אחד יכול להשתמש במוצר בקלות ובנוחות.</p>
+                    <p class="text-lg mb-6 text-gray-600">הפיתוח שלנו מבוסס על מחקר רב-שנים ושיתוף פעולה עם מומחים מובילים בתחום. זה מה שמאפשר לנו להציע פתרון שעובד בצורה יוצאת דופן.</p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#pricing" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold text-lg hover:bg-indigo-700 transition duration-300">רכשו עכשיו</a>
+                        <a href="#testimonials" class="bg-transparent border-2 border-indigo-600 text-indigo-600 px-6 py-3 rounded-lg font-bold text-lg hover:bg-indigo-50 transition duration-300">ראו המלצות</a>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 md:pl-10">
+                    <img src="https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" alt="תמונת המוצר" class="rounded-lg shadow-lg w-full">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-16 bg-white" data-section-type="testimonials-1" data-title="המלצות לקוחות">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-2 text-gray-800">מה הלקוחות אומרים עלינו</h2>
+            <p class="text-xl mb-12 text-gray-600 max-w-3xl mx-auto">המלצות מאנשים אמיתיים שכבר משתמשים במוצר</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="p-6 bg-white rounded-lg shadow-md relative">
+                    <div class="text-indigo-500 text-6xl absolute top-2 right-4 opacity-20">"</div>
+                    <div class="flex justify-center mb-4">
+                        <div class="flex text-yellow-400">
+                            <i class="ri-star-fill mx-0.5"></i>
+                            <i class="ri-star-fill mx-0.5"></i>
+                            <i class="ri-star-fill mx-0.5"></i>
+                            <i class="ri-star-fill mx-0.5"></i>
+                            <i class="ri-star-fill mx-0.5"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6 relative z-10">המוצר פשוט מדהים! חסך לי שעות עבודה ושיפר את התוצאות של העסק שלי. אני לא יכול לדמיין איך הייתי מסתדר בלעדיו.</p>
+                    <div class="flex items-center">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&q=80" alt="לקוח 1" class="w-12 h-12 rounded-full object-cover ml-3">
+                        <div class="text-right">
+                            <h4 class="font-bold text-gray-800">משה כהן</h4>
+                            <p class="text-gray-500 text-sm">מנכ"ל, חברת אלפא</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-6 bg-white rounded-lg shadow-md relative">
+                    <div class="text-indigo-500 text-6xl absolute top-2 right-4 opacity-20">"</div>
+                    <div class="flex justify-center mb-4">
+                        <div class="flex text-yellow-400">
+                            <i class="ri-star-fill mx-0.5"></i>
+                            <i class="ri-star-fill mx-0.5"></i>
+                            <i class="ri-star-fill mx-0.5"></i>
+                            <i class="ri-star-fill mx-0.5"></i>
+                            <i class="ri-star-fill mx-0.5"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6 relative z-10">הגדלנו את ההכנסות שלנו ב-45% מאז שהתחלנו להשתמש במוצר! זו היתה אחת ההחלטות העסקיות הטובות ביותר שקיבלנו.</p>
+                    <div class="flex items-center">
+                        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&q=80" alt="לקוח 2" class="w-12 h-12 rounded-full object-cover ml-3">
+                        <div class="text-right">
+                            <h4 class="font-bold text-gray-800">רונית לוי</h4>
+                            <p class="text-gray-500 text-sm">בעלת עסק</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-6 bg-white rounded-lg shadow-md relative">
+                    <div class="text-indigo-500 text-6xl absolute top-2 right-4 opacity-20">"</div>
+                    <div class="flex justify-center mb-4">
+                        <div class="flex text-yellow-400">
+                            <i class="ri-star-fill mx-0.5"></i>
+                            <i class="ri-star-fill mx-0.5"></i>
+                            <i class="ri-star-fill mx-0.5"></i>
+                            <i class="ri-star-fill mx-0.5"></i>
+                            <i class="ri-star-fill mx-0.5"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6 relative z-10">חששתי בהתחלה, אבל תוך שבוע כבר ראיתי תוצאות מדהימות. התמיכה שלהם מעולה והמוצר פשוט מעל ומעבר לציפיות.</p>
+                    <div class="flex items-center">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&q=80" alt="לקוח 3" class="w-12 h-12 rounded-full object-cover ml-3">
+                        <div class="text-right">
+                            <h4 class="font-bold text-gray-800">אלון גולדמן</h4>
+                            <p class="text-gray-500 text-sm">יזם</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-16 bg-gray-50" data-section-type="pricing-1" data-title="מחירון חבילות">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-2 text-gray-800">מחירים פשוטים ושקופים</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">בחרו את החבילה המתאימה לכם</p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-8">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden w-full md:w-72 border border-gray-200">
+                    <div class="p-6 bg-gray-50 text-center border-b">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-1">בסיסי</h3>
+                        <p class="text-gray-500 mb-4">למתחילים</p>
+                        <div class="text-center">
+                            <span class="text-4xl font-bold text-gray-800">₪99</span>
+                            <span class="text-gray-500">/חודש</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <ul class="space-y-3">
+                            <li class="flex items-center">
+                                <i class="ri-check-line text-green-500 ml-2"></i>
+                                <span class="text-gray-700">תכונה בסיסית 1</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="ri-check-line text-green-500 ml-2"></i>
+                                <span class="text-gray-700">תכונה בסיסית 2</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="ri-check-line text-green-500 ml-2"></i>
+                                <span class="text-gray-700">תכונה בסיסית 3</span>
+                            </li>
+                            <li class="flex items-center text-gray-400">
+                                <i class="ri-close-line ml-2"></i>
+                                <span>תכונה מתקדמת 1</span>
+                            </li>
+                            <li class="flex items-center text-gray-400">
+                                <i class="ri-close-line ml-2"></i>
+                                <span>תכונה מתקדמת 2</span>
+                            </li>
+                        </ul>
+                        <a href="#contact" class="w-full mt-8 block text-center py-3 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-300">הזמינו עכשיו</a>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-xl overflow-hidden w-full md:w-72 border-2 border-indigo-500 relative">
+                    <div class="absolute top-0 left-0 right-0 bg-indigo-500 text-white text-center text-sm py-1">
+                        הכי פופולרי
+                    </div>
+                    <div class="p-6 bg-indigo-50 text-center border-b">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-1">פרו</h3>
+                        <p class="text-gray-500 mb-4">לעסקים צומחים</p>
+                        <div class="text-center">
+                            <span class="text-4xl font-bold text-gray-800">₪199</span>
+                            <span class="text-gray-500">/חודש</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <ul class="space-y-3">
+                            <li class="flex items-center">
+                                <i class="ri-check-line text-green-500 ml-2"></i>
+                                <span class="text-gray-700">כל התכונות הבסיסיות</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="ri-check-line text-green-500 ml-2"></i>
+                                <span class="text-gray-700">תכונה מתקדמת 1</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="ri-check-line text-green-500 ml-2"></i>
+                                <span class="text-gray-700">תכונה מתקדמת 2</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="ri-check-line text-green-500 ml-2"></i>
+                                <span class="text-gray-700">תכונה נוספת 1</span>
+                            </li>
+                            <li class="flex items-center text-gray-400">
+                                <i class="ri-close-line ml-2"></i>
+                                <span>תכונה פרימיום</span>
+                            </li>
+                        </ul>
+                        <a href="#contact" class="w-full mt-8 block text-center py-3 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-300">הזמינו עכשיו</a>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md overflow-hidden w-full md:w-72 border border-gray-200">
+                    <div class="p-6 bg-gray-50 text-center border-b">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-1">פרימיום</h3>
+                        <p class="text-gray-500 mb-4">לעסקים מבוססים</p>
+                        <div class="text-center">
+                            <span class="text-4xl font-bold text-gray-800">₪299</span>
+                            <span class="text-gray-500">/חודש</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <ul class="space-y-3">
+                            <li class="flex items-center">
+                                <i class="ri-check-line text-green-500 ml-2"></i>
+                                <span class="text-gray-700">כל התכונות של חבילת פרו</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="ri-check-line text-green-500 ml-2"></i>
+                                <span class="text-gray-700">תכונה פרימיום</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="ri-check-line text-green-500 ml-2"></i>
+                                <span class="text-gray-700">תמיכה VIP</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="ri-check-line text-green-500 ml-2"></i>
+                                <span class="text-gray-700">הדרכה אישית</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="ri-check-line text-green-500 ml-2"></i>
+                                <span class="text-gray-700">עדיפות בפיתוח</span>
+                            </li>
+                        </ul>
+                        <a href="#contact" class="w-full mt-8 block text-center py-3 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-300">הזמינו עכשיו</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-16 bg-white" data-section-type="faq-1" data-title="שאלות נפוצות">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold mb-2 text-gray-800">שאלות נפוצות</h2>
+                    <p class="text-xl text-gray-600">תשובות לשאלות שנשאלות בתדירות גבוהה</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="flex items-center justify-between w-full p-4 text-right bg-white hover:bg-gray-50 focus:outline-none">
+                            <span class="text-lg font-medium text-gray-800">כמה זמן לוקח להתחיל להשתמש במוצר?</span>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-400"></i>
+                        </button>
+                        <div class="px-4 pb-4">
+                            <p class="text-gray-600">תוכלו להתחיל להשתמש במוצר מיד לאחר ההרשמה והתשלום. ההגדרה הראשונית אורכת פחות מ-5 דקות ותוכלו ליהנות מהיתרונות באופן מיידי.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="flex items-center justify-between w-full p-4 text-right bg-white hover:bg-gray-50 focus:outline-none">
+                            <span class="text-lg font-medium text-gray-800">האם יש תקופת ניסיון?</span>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-400"></i>
+                        </button>
+                        <div class="px-4 pb-4">
+                            <p class="text-gray-600">כן, אנחנו מציעים תקופת ניסיון של 30 יום ללא התחייבות. תוכלו לבטל בכל עת במהלך תקופת הניסיון ולא תחויבו.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="flex items-center justify-between w-full p-4 text-right bg-white hover:bg-gray-50 focus:outline-none">
+                            <span class="text-lg font-medium text-gray-800">איך מבטלים את המנוי?</span>
+                            <i class="ri-arrow-down-s-line text-xl text-gray-400"></i>
+                        </button>
+                        <div class="px-4 pb-4">
+                            <p class="text-gray-600">ביטול המנוי פשוט מאוד. ניתן לבטל בכל עת דרך החשבון האישי באתר, או על ידי פנייה לשירות הלקוחות שלנו. אין קנסות יציאה או התחייבויות.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call To Action Section -->
+    <section id="cta" class="py-16 bg-indigo-600 text-white relative" data-section-type="cta-2" data-title="הנעה לפעולה">
+        <div class="absolute inset-0">
+            <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" alt="רקע" class="w-full h-full object-cover opacity-20">
+        </div>
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">מוכנים להתחיל? הצטרפו עוד היום!</h2>
+            <p class="text-xl mb-8 max-w-3xl mx-auto">אל תחמיצו את המבצע המיוחד שלנו - הנחה של 20% לנרשמים החודש</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#contact" class="bg-white text-indigo-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition duration-300 shadow-lg">התחילו עכשיו</a>
+                <a href="tel:+972123456789" class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:bg-opacity-10 transition duration-300">
+                    <i class="ri-phone-line ml-2"></i>דברו איתנו
+                </a>
+            </div>
+        </div>
+    </section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-16 bg-white" data-section-type="contact-1" data-title="טופס הרשמה">
+    <div class="container mx-auto px-4">
+        <div class="max-w-3xl mx-auto text-center mb-12">
+            <h2 class="text-3xl font-bold mb-2 text-gray-800">הרשמו עכשיו וקבלו 30 יום ניסיון בחינם</h2>
+            <p class="text-xl text-gray-600">השאירו פרטים ונחזור אליכם בהקדם</p>
+        </div>
+        
+        <div class="max-w-lg mx-auto bg-white rounded-lg shadow-lg p-8 border border-gray-200">
+            <form action="#" method="post">
+                <div class="mb-4">
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">שם מלא</label>
+                    <input type="text" id="name" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">אימייל</label>
+                    <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">טלפון</label>
+                    <input type="tel" id="phone" name="phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="plan" class="block text-sm font-medium text-gray-700 mb-1">חבילה מועדפת</label>
+                    <select id="plan" name="plan" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="basic">בסיסי - ₪99/חודש</option>
+                        <option value="pro" selected>פרו - ₪199/חודש</option>
+                        <option value="premium">פרימיום - ₪299/חודש</option>
+                    </select>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" required>
+                        <span class="mr-2 text-sm text-gray-600">אני מסכים/ה <a href="#" class="text-indigo-600 hover:underline">לתנאי השימוש</a> ול<a href="#" class="text-indigo-600 hover:underline">מדיניות הפרטיות</a></span>
+                    </label>
+                </div>
+                
+                <div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 font-bold text-lg">התחילו את תקופת הניסיון</button>
+                </div>
+                
+                <p class="text-sm text-gray-500 text-center mt-4">אין צורך בפרטי כרטיס אשראי לתקופת הניסיון</p>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer id="footer" class="bg-gray-800 text-white py-10" data-section-type="footer-1" data-title="פוטר">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-wrap justify-between">
+            <div class="w-full md:w-1/3 mb-6 md:mb-0">
+                <h3 class="text-xl font-bold mb-4">המוצר שלנו</h3>
+                <p class="text-gray-400 mb-4">הפתרון המהפכני שיעזור לכם להגדיל את העסק שלכם, לחסוך זמן ולהגביר את היעילות.</p>
+                <div class="flex space-x-4 rtl:space-x-reverse">
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                        <i class="ri-facebook-fill text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                        <i class="ri-instagram-line text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                        <i class="ri-twitter-fill text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                        <i class="ri-linkedin-fill text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="w-full md:w-1/3 mb-6 md:mb-0">
+                <h3 class="text-xl font-bold mb-4">קישורים מהירים</h3>
+                <ul class="space-y-2">
+                    <li><a href="#features" class="text-gray-400 hover:text-white transition duration-300">יתרונות</a></li>
+                    <li><a href="#pricing" class="text-gray-400 hover:text-white transition duration-300">מחירים</a></li>
+                    <li><a href="#testimonials" class="text-gray-400 hover:text-white transition duration-300">המלצות</a></li>
+                    <li><a href="#faq" class="text-gray-400 hover:text-white transition duration-300">שאלות נפוצות</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">תנאי שימוש</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">מדיניות פרטיות</a></li>
+                </ul>
+            </div>
+            
+            <div class="w-full md:w-1/3">
+                <h3 class="text-xl font-bold mb-4">צור קשר</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-center">
+                        <i class="ri-map-pin-line text-indigo-400 ml-2"></i>
+                        <span class="text-gray-400">רחוב האלמוגים 15, תל אביב</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="ri-phone-line text-indigo-400 ml-2"></i>
+                        <a href="tel:+972123456789" class="text-gray-400 hover:text-white transition duration-300">03-1234567</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="ri-mail-line text-indigo-400 ml-2"></i>
+                        <a href="mailto:info@example.com" class="text-gray-400 hover:text-white transition duration-300">info@example.com</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+            <p class="text-gray-400 text-sm">&copy; 2023 המוצר שלנו. כל הזכויות שמורות.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
