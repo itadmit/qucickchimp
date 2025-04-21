@@ -1,6 +1,124 @@
 <script>
         // Initialize variables
         let currentContent = <?php echo json_encode($pageContent); ?>;
+        
+        // בדיקה שיש תוכן ואם לא - הוספת תבנית בסיסית
+        if (!currentContent || currentContent.trim() === '') {
+            console.log("Empty content - using basic template");
+            currentContent = `
+            <!DOCTYPE html>
+            <html lang="he" dir="rtl">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>דף נחיתה חדש</title>
+                <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+                <style>
+                    :root {
+                        --primary-color: #6366f1;
+                        --secondary-color: #4f46e5;
+                        --accent-color: #ec4899;
+                        --bg-color: #ffffff;
+                        --text-color: #1f2937;
+                    }
+                </style>
+            </head>
+            <body class="font-sans bg-white">
+                <header class="bg-purple-600 text-white py-8">
+                    <div class="container mx-auto px-6 text-center">
+                        <h1 class="text-4xl font-bold">כותרת דף הנחיתה</h1>
+                        <p class="mt-4 text-xl">תיאור קצר של דף הנחיתה שלך</p>
+                    </div>
+                </header>
+                <section class="py-12" data-section-type="content">
+                    <div class="container mx-auto px-6">
+                        <h2 class="text-3xl font-bold text-center mb-8">הכותרת שלך כאן</h2>
+                        <p class="text-lg text-center max-w-3xl mx-auto">
+                            זהו טקסט לדוגמה. כאן תוכל לכתוב את התוכן שלך. 
+                            הוסף טקסט שמתאר את המוצר או השירות שלך.
+                        </p>
+                    </div>
+                </section>
+                <section class="bg-gray-100 py-12" data-section-type="contact">
+                    <div class="container mx-auto px-6">
+                        <h2 class="text-3xl font-bold text-center mb-8">צור קשר</h2>
+                        <div class="max-w-lg mx-auto">
+                            <form class="bg-white shadow-md rounded p-6">
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+                                        שם מלא
+                                    </label>
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="הזן את שמך">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+                                        אימייל
+                                    </label>
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email" placeholder="הזן את האימייל שלך">
+                                </div>
+                                <div class="mb-6">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="message">
+                                        הודעה
+                                    </label>
+                                    <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="message" rows="4" placeholder="הזן את ההודעה שלך"></textarea>
+                                </div>
+                                <div class="flex items-center justify-center">
+                                    <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                                        שלח
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+                <section class="bg-gray-100 py-12" data-section-type="contact">
+                    <div class="container mx-auto px-6">
+                        <h2 class="text-3xl font-bold text-center mb-8">צור קשר</h2>
+                        <div class="max-w-lg mx-auto">
+                            <form class="bg-white shadow-md rounded p-6">
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+                                        שם מלא
+                                    </label>
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="הזן את שמך">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+                                        אימייל
+                                    </label>
+                                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email" placeholder="הזן את האימייל שלך">
+                                </div>
+                                <div class="mb-6">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2" for="message">
+                                        הודעה
+                                    </label>
+                                    <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="message" rows="4" placeholder="הזן את ההודעה שלך"></textarea>
+                                </div>
+                                <div class="flex items-center justify-center">
+                                    <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                                        שלח
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+                <footer class="bg-gray-800 text-white py-8 text-center">
+                    <div class="container mx-auto px-6">
+                        <p>© 2023 כל הזכויות שמורות</p>
+                    </div>
+                </footer>
+            </body>
+            </html>
+            `;
+        }
+        
+        // עדכון התצוגה המקדימה מיד בטעינה
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM loaded - updating preview");
+            updatePreview();
+        });
+        
         let editor;
         let selectedSection = null;
         let activeSectionId = null;
@@ -769,666 +887,281 @@ mediaItems.forEach(item => {
                 `;
                 controlsContainer.appendChild(formHeader);
                 
-                // Add form fields editor
-                const formEditor = document.createElement('div');
-                formEditor.id = 'form-fields-editor';
-                formEditor.innerHTML = `
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">שדות הטופס</label>
-                        <div id="form-fields-section">
-                            <div id="form-fields-container" class="space-y-2 mb-3"></div>
-                        </div>
-                        <div id="no-fields-message" class="text-center text-gray-500 py-3">
-                            <p>לא נמצאו שדות בטופס. הוסף שדה חדש!</p>
-                        </div>
-                        <button id="add-form-field-btn" type="button" class="mt-2 w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                            <i class="ri-add-line ml-1"></i> הוסף שדה חדש
-                        </button>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">הגדרות מתקדמות</label>
-                        <div class="bg-gray-50 p-3 rounded-md">
-                            <div class="mb-3">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">שייך לרשימת תפוצה</label>
-                                <select id="form-list-select" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
-                                    <option value="">לא משויך (ברירת מחדל)</option>
-                                    <option value="list-1">רשימה ראשית</option>
-                                    <option value="list-2">מתעניינים</option>
-                                    <option value="list-3">לקוחות</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">תיוג</label>
-                                <input type="text" id="form-tag-input" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="הוסף תיוגים מופרדים בפסיק">
-                            </div>
-                            <div class="flex items-center mt-3">
-                                <input id="redirect-checkbox" type="checkbox" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
-                                <label for="redirect-checkbox" class="mr-2 block text-sm text-gray-700">עבור לדף "תודה" לאחר שליחה</label>
-                            </div>
-                            <div id="redirect-url-container" class="mt-3 hidden">
-                                <input type="text" id="redirect-url-input" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="URL לדף תודה">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <div class="flex justify-between items-center">
-                            <label class="block text-sm font-medium text-gray-700">מספר השדות: </label>
-                            <span id="fields-count" class="text-sm font-medium text-purple-600">0</span>
-                        </div>
-                    </div>
+                // Add form settings button
+                const formSettingsButton = document.createElement('div');
+                formSettingsButton.innerHTML = `
+                    <button id="open-form-settings-btn" type="button" class="w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                        <i class="ri-settings-3-line ml-1"></i> פתח הגדרות טופס
+                    </button>
                 `;
-                controlsContainer.appendChild(formEditor);
+                controlsContainer.appendChild(formSettingsButton);
                 
-                // Initialize form editor
-                initFormEditor(section, iframeDoc);
-            }
-            
-
-            
-            // Background color control
-            const controlDiv = document.createElement('div');
-            controlDiv.innerHTML = `
-                <label class="block text-sm font-medium text-gray-700 mb-1">צבע רקע</label>
-                <div class="flex">
-                    <input type="color" class="h-10 w-10 border border-gray-300 rounded-md ml-2" 
-                          value="${rgbToHex(getComputedStyle(section).backgroundColor)}" data-target="bg-color">
-                    <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500" 
-                          value="${rgbToHex(getComputedStyle(section).backgroundColor)}" data-target="bg-color-text" dir="ltr">
-                </div>
-            `;
-            
-            controlsContainer.appendChild(controlDiv);
-            
-            const colorInput = controlDiv.querySelector('input[type="color"]');
-            const colorTextInput = controlDiv.querySelector('input[type="text"]');
-            
-            colorInput.addEventListener('input', () => {
-                section.style.backgroundColor = colorInput.value;
-                colorTextInput.value = colorInput.value;
-                
-                // Update current content
-                currentContent = iframeDoc.documentElement.outerHTML;
-            });
-            
-            colorTextInput.addEventListener('input', () => {
-                if (/^#[0-9A-F]{6}$/i.test(colorTextInput.value)) {
-                    section.style.backgroundColor = colorTextInput.value;
-                    colorInput.value = colorTextInput.value;
+                // Setup event listener for form settings button
+                document.getElementById('open-form-settings-btn').addEventListener('click', function() {
+                    // יצירת המודל
+                    let modalElement = document.getElementById('form-settings-modal');
+                    if (!modalElement) {
+                        modalElement = document.createElement('div');
+                        modalElement.id = 'form-settings-modal';
+                        modalElement.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50';
+                        document.body.appendChild(modalElement);
+                    }
                     
-                    // Update current content
-                    currentContent = iframeDoc.documentElement.outerHTML;
-                }
-            });
-
-            const sectionImages = section.querySelectorAll('img');
-            setupImageControlButtons();
-            if (sectionImages.length > 0) {
-                controlsContainer.appendChild(document.createElement('hr'));
-                
-                const imageHeader = document.createElement('h3');
-                imageHeader.className = 'text-sm font-medium text-gray-700 my-3';
-                imageHeader.textContent = 'תמונות';
-                controlsContainer.appendChild(imageHeader);
-                
-                sectionImages.forEach((image, index) => {
-                    const imageControlDiv = document.createElement('div');
-                    imageControlDiv.className = 'bg-gray-50 p-3 rounded-lg mb-3 relative';
+                    // וידוא שיש טופס בסקשן
+                    const currentForm = section.querySelector('form');
+                    if (!currentForm) {
+                        console.error('אין טופס בסקשן');
+                        return;
+                    }
                     
-                    // תצוגה מקדימה
-                    const imagePreview = document.createElement('div');
-                    imagePreview.className = 'flex justify-center mb-2';
-                    imagePreview.innerHTML = `
-                        <div class="relative w-full h-24 overflow-hidden rounded border border-gray-300">
-                            <img src="${image.src}" class="object-contain w-full h-full" alt="תצוגה מקדימה">
+                    // תוכן המודל
+                    modalElement.innerHTML = `
+                        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+                            <div class="p-3 border-b flex justify-between items-center bg-purple-50">
+                                <h3 class="text-lg font-medium text-purple-700">הגדרות טופס יצירת קשר</h3>
+                                <button id="close-form-settings-modal" class="text-gray-500 hover:text-gray-700">
+                                    <i class="ri-close-line text-xl"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="overflow-y-auto flex-grow p-3">
+                                <!-- Form Fields Container -->
+                                <div class="mb-4">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <h4 class="text-md font-medium text-gray-700">שדות הטופס</h4>
+                                        <span id="modal-fields-count" class="text-sm font-medium text-purple-600">0</span>
+                                    </div>
+                                    
+                                    <div id="modal-form-fields-section">
+                                        <div id="modal-form-fields-container" class="space-y-1 mb-2"></div>
+                                    </div>
+                                    <div id="modal-no-fields-message" class="text-center text-gray-500 py-3">
+                                        <p>לא נמצאו שדות בטופס. הוסף שדה חדש!</p>
+                                    </div>
+                                    <button id="modal-add-form-field-btn" type="button" class="mt-2 w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-purple-500">
+                                        <i class="ri-add-line ml-1"></i> הוסף שדה חדש
+                                    </button>
+                                </div>
+                                
+                                <!-- Advanced Settings -->
+                                <div class="border-t border-gray-200 pt-4">
+                                    <h4 class="text-md font-medium text-gray-700 mb-3">הגדרות מתקדמות</h4>
+                                    
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="mb-3">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">שייך לרשימת תפוצה</label>
+                                            <select id="modal-form-list-select" class="block w-full py-1.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                                <option value="">לא משויך (ברירת מחדל)</option>
+                                                <option value="list-1">רשימה ראשית</option>
+                                                <option value="list-2">מתעניינים</option>
+                                                <option value="list-3">לקוחות</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">תיוג</label>
+                                            <input type="text" id="modal-form-tag-input" class="block w-full py-1.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="הוסף תיוגים מופרדים בפסיק">
+                                        </div>
+                                        
+                                        <div class="flex items-center mt-3">
+                                            <input id="modal-redirect-checkbox" type="checkbox" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                            <label for="modal-redirect-checkbox" class="mr-2 block text-sm text-gray-700">עבור לדף "תודה" לאחר שליחה</label>
+                                        </div>
+                                        
+                                        <div id="modal-redirect-url-container" class="mt-2 hidden">
+                                            <input type="text" id="modal-redirect-url-input" class="block w-full py-1.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="URL לדף תודה">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-3 border-t flex justify-end">
+                                <button id="cancel-form-settings-btn" class="px-3 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                                    ביטול
+                                </button>
+                                <button id="save-form-settings-btn" class="mr-3 px-3 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none">
+                                    שמור הגדרות
+                                </button>
+                            </div>
                         </div>
                     `;
-                    imageControlDiv.appendChild(imagePreview);
                     
-                    // שדה URL
-                    const urlInputGroup = document.createElement('div');
-                    urlInputGroup.className = 'mb-2';
-                    urlInputGroup.innerHTML = `
-                        <label class="block text-xs font-medium text-gray-700 mb-1">כתובת התמונה</label>
-                        <input type="text" class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500" 
-                            value="${image.src}" data-target="image-src-${index}">
-                    `;
-                    imageControlDiv.appendChild(urlInputGroup);
+                    // הצגת המודל
+                    modalElement.classList.remove('hidden');
                     
-                    // שדה לטקסט חלופי
-                    const altInputGroup = document.createElement('div');
-                    altInputGroup.className = 'mb-2';
-                    altInputGroup.innerHTML = `
-                        <label class="block text-xs font-medium text-gray-700 mb-1">טקסט חלופי</label>
-                        <input type="text" class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500" 
-                            value="${image.alt || ''}" data-target="image-alt-${index}">
-                    `;
-                    imageControlDiv.appendChild(altInputGroup);
+                    // אתחול עורך הטופס
+                    initFormEditor(section, iframeDoc);
                     
-                   // כפתור החלפת תמונה
-// כפתור החלפת תמונה
-const uploadButton = document.createElement('button');
-uploadButton.className = 'w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-3 rounded text-sm flex items-center justify-center';
-uploadButton.innerHTML = '<i class="ri-image-add-line ml-1"></i> החלף תמונה';
-uploadButton.addEventListener('click', (e) => {
-    // קוד קיים לטיפול בלחיצה
-});
-imageControlDiv.appendChild(uploadButton);
-// מאזין אירועים פשוט יותר
-uploadButton.addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    console.log("Change image button clicked");
-    
-    // מניעת פתיחות כפולות
-    if (window.isMediaLibraryOpening) return;
-    window.isMediaLibraryOpening = true;
-    
-    // קבלת מזהה דף הנחיתה
-    const urlParams = new URLSearchParams(window.location.search);
-    const landingPageId = urlParams.get('id');
-    
-    if (!landingPageId) {
-        alert('לא נמצא מזהה דף נחיתה');
-        window.isMediaLibraryOpening = false;
-        return;
-    }
-    
-    // פתיחת ספריית המדיה בשיטה הפשוטה ביותר
-    window.mediaLibrary.open(landingPageId, function(newImageUrl) {
-        console.log("Selected image:", newImageUrl);
-        
-        if (newImageUrl) {
-            // עדכון התמונה המקורית
-            image.src = newImageUrl;
-            
-            // עדכון התצוגה המקדימה
-            const previewImg = imagePreview.querySelector('img');
-            if (previewImg) {
-                previewImg.src = newImageUrl;
-            }
-            
-            // עדכון שדה ה-URL
-            const urlInput = urlInputGroup.querySelector('input');
-            if (urlInput) {
-                urlInput.value = newImageUrl;
-                
-                // הפעלת אירוע input כדי לעדכן את התמונה באיפריים
-                const inputEvent = new Event('input', { bubbles: true });
-                urlInput.dispatchEvent(inputEvent);
-            }
-            
-            // עדכון התוכן הכללי
-            const iframe = document.getElementById('preview-iframe');
-            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            currentContent = iframeDoc.documentElement.outerHTML;
-        }
-        
-        // איפוס דגל פתיחת המודל
-        window.isMediaLibraryOpening = false;
-    });
-});
-
-imageControlDiv.appendChild(uploadButton);
-
-
-                    // הוספת מאזינים לשינויים בשדות
-                    const urlInput = urlInputGroup.querySelector('input');
-                    const altInput = altInputGroup.querySelector('input');
-                    
-                    urlInput.addEventListener('input', () => {
-                        image.src = urlInput.value;
-                        const previewImg = imagePreview.querySelector('img');
-                        if (previewImg) previewImg.src = urlInput.value;
+                    // הצגת השדות במודל
+                    const formFieldsContainer = document.getElementById('modal-form-fields-container');
+                    if (formFieldsContainer) {
+                        // ניקוי קונטיינר השדות
+                        formFieldsContainer.innerHTML = '';
                         
-                        // עדכון התוכן
-                        currentContent = iframeDoc.documentElement.outerHTML;
-                    });
-                    
-                    altInput.addEventListener('input', () => {
-                        image.alt = altInput.value;
-                        
-                        // עדכון התוכן
-                        currentContent = iframeDoc.documentElement.outerHTML;
-                    });
-                    
-                    controlsContainer.appendChild(imageControlDiv);
-                });
-            }
-
-        }
-        
-        // Convert RGB to Hex
-        function rgbToHex(rgb) {
-            // Check if already hex
-            if (rgb.startsWith('#')) {
-                return rgb;
-            }
-            
-            // Parse RGB
-            const matches = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-            if (!matches) return '#ffffff';
-            
-            function hex(x) {
-                return ("0" + parseInt(x).toString(16)).slice(-2);
-            }
-            
-            return "#" + hex(matches[1]) + hex(matches[2]) + hex(matches[3]);
-        }
-        
-        // Apply color scheme
-        function applyColorScheme(schemeId) {
-            const scheme = colorSchemes[schemeId];
-            if (!scheme) return;
-            
-            // Set color inputs
-            document.getElementById('primary-color').value = scheme.primary;
-            document.getElementById('primary-color-text').value = scheme.primary;
-            document.getElementById('secondary-color').value = scheme.secondary;
-            document.getElementById('secondary-color-text').value = scheme.secondary;
-            
-            // Apply to iframe
-            const iframe = document.getElementById('preview-iframe');
-            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            
-            const style = document.createElement('style');
-            style.textContent = `
-                :root {
-                    --primary-color: ${scheme.primary};
-                    --secondary-color: ${scheme.secondary};
-                    --accent-color: ${scheme.accent};
-                    --bg-color: ${scheme.background};
-                    --text-color: ${scheme.text};
-                }
-                
-                body {
-                    background-color: var(--bg-color);
-                    color: var(--text-color);
-                }
-                
-                .bg-primary, .bg-indigo-600, .bg-purple-600, .bg-blue-600 {
-                    background-color: var(--primary-color) !important;
-                }
-                
-                .text-primary, .text-indigo-600, .text-purple-600, .text-blue-600 {
-                    color: var(--primary-color) !important;
-                }
-                
-                .border-primary, .border-indigo-600, .border-purple-600, .border-blue-600 {
-                    border-color: var(--primary-color) !important;
-                }
-                
-                .bg-secondary, .bg-indigo-700, .bg-purple-700, .bg-blue-700 {
-                    background-color: var(--secondary-color) !important;
-                }
-                
-                .text-secondary, .text-indigo-700, .text-purple-700, .text-blue-700 {
-                    color: var(--secondary-color) !important;
-                }
-                
-                .border-secondary, .border-indigo-700, .border-purple-700, .border-blue-700 {
-                    border-color: var(--secondary-color) !important;
-                }
-                
-                a, button, .btn, .button {
-                    transition: all 0.3s ease;
-                }
-                
-                a.btn, button.btn, .btn, .button {
-                    display: inline-block;
-                    padding: 0.5rem 1rem;
-                    border-radius: 0.375rem;
-                    font-weight: 500;
-                    text-align: center;
-                }
-                
-                a.btn-primary, button.btn-primary, .btn-primary {
-                    background-color: var(--primary-color);
-                    color: white;
-                }
-                
-                a.btn-primary:hover, button.btn-primary:hover, .btn-primary:hover {
-                    background-color: var(--secondary-color);
-                }
-                
-                a.btn-outline, button.btn-outline, .btn-outline {
-                    background-color: transparent;
-                    border: 1px solid var(--primary-color);
-                    color: var(--primary-color);
-                }
-                
-                a.btn-outline:hover, button.btn-outline:hover, .btn-outline:hover {
-                    background-color: var(--primary-color);
-                    color: white;
-                }
-            `;
-            
-            // Apply or update style
-            const existingStyle = iframeDoc.head.querySelector('style#color-scheme');
-            if (existingStyle) {
-                existingStyle.textContent = style.textContent;
-            } else {
-                style.id = 'color-scheme';
-                iframeDoc.head.appendChild(style);
-            }
-            
-            // Update current content
-            currentContent = iframeDoc.documentElement.outerHTML;
-        }
-        
-        // Apply font
-        function applyFont(fontFamily) {
-            const iframe = document.getElementById('preview-iframe');
-            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            
-            const style = document.createElement('style');
-            style.textContent = `
-                body, html {
-                    font-family: ${fontFamily};
-                }
-            `;
-            
-            // Apply or update style
-            const existingStyle = iframeDoc.head.querySelector('style#font-style');
-            if (existingStyle) {
-                existingStyle.textContent = style.textContent;
-            } else {
-                style.id = 'font-style';
-                iframeDoc.head.appendChild(style);
-            }
-            
-            // Update current content
-            currentContent = iframeDoc.documentElement.outerHTML;
-        }
-        
- // Initialize page
- document.addEventListener('DOMContentLoaded', () => {
-            // Initialize preview
-            updatePreview();
-            // הצגת פאנל העריכה כברירת מחדל במקום פאנל ההגדרות
-            document.getElementById('page-settings-panel').classList.add('hidden');
-            document.getElementById('section-editor-panel').classList.remove('hidden');
-            document.getElementById('add-section-panel').classList.add('hidden');
-
-            // עדכון סגנון הכפתורים
-            document.getElementById('page-settings-tab').classList.remove('bg-purple-100', 'text-purple-700');
-            document.getElementById('page-settings-tab').classList.add('text-gray-600', 'hover:bg-gray-100');
-            document.getElementById('section-editor-tab').classList.remove('text-gray-600', 'hover:bg-gray-100');
-            document.getElementById('section-editor-tab').classList.add('bg-purple-100', 'text-purple-700');
-
-
-            // עדכון כותרת הפאנל
-            document.getElementById('settings-panel-title').textContent = 'עריכת סקשן';
-            // Initialize HTML editor
-            editor = CodeMirror.fromTextArea(document.getElementById('html-editor'), {
-                mode: 'htmlmixed',
-                lineNumbers: true,
-                indentUnit: 4,
-                autoCloseTags: true,
-                lineWrapping: true
-            });
-            
-            // Tab switching
-            document.getElementById('page-settings-tab').addEventListener('click', () => {
-                document.getElementById('page-settings-panel').classList.remove('hidden');
-                document.getElementById('section-editor-panel').classList.add('hidden');
-                document.getElementById('add-section-panel').classList.add('hidden');
-                
-                document.getElementById('page-settings-tab').classList.remove('text-gray-600', 'hover:bg-gray-100');
-                document.getElementById('page-settings-tab').classList.add('bg-purple-100', 'text-purple-700');
-                document.getElementById('section-editor-tab').classList.remove('bg-purple-100', 'text-purple-700');
-                document.getElementById('section-editor-tab').classList.add('text-gray-600', 'hover:bg-gray-100');
-                document.getElementById('add-section-tab').classList.remove('bg-purple-100', 'text-purple-700');
-                document.getElementById('add-section-tab').classList.add('text-gray-600', 'hover:bg-gray-100');
-                
-                document.getElementById('settings-panel-title').textContent = 'הגדרות כלליות';
-                document.getElementById('back-to-list-btn').classList.add('hidden');
-            });
-            
-             document.getElementById('section-editor-tab').addEventListener('click', () => {
-                // עובר תמיד למצב עריכה בלי לבדוק אם יש selectedSection
-                document.getElementById('page-settings-panel').classList.add('hidden');
-                document.getElementById('section-editor-panel').classList.remove('hidden');
-                document.getElementById('add-section-panel').classList.add('hidden');
-                
-                document.getElementById('page-settings-tab').classList.remove('bg-purple-100', 'text-purple-700');
-                document.getElementById('page-settings-tab').classList.add('text-gray-600', 'hover:bg-gray-100');
-                document.getElementById('section-editor-tab').classList.remove('text-gray-600', 'hover:bg-gray-100');
-                document.getElementById('section-editor-tab').classList.add('bg-purple-100', 'text-purple-700');
-                document.getElementById('add-section-tab').classList.remove('bg-purple-100', 'text-purple-700');
-                document.getElementById('add-section-tab').classList.add('text-gray-600', 'hover:bg-gray-100');
-                
-                // אם אין סקשן נבחר, מציג הודעת ברירת מחדל
-                if (!selectedSection) {
-                    document.getElementById('section-controls').innerHTML = `
-                    <div class="p-4 text-center text-gray-500">
-                        <i class="ri-information-line text-xl mb-2 block"></i>
-                        <p>בחר סקשן כדי לצפות בהגדרות שלו</p>
-                    </div>
-                    `;
-                    document.getElementById('settings-panel-title').textContent = 'עריכת סקשן';
-                }
-            });
-
-            
-            document.getElementById('add-section-tab').addEventListener('click', () => {
-                document.getElementById('page-settings-panel').classList.add('hidden');
-                document.getElementById('section-editor-panel').classList.add('hidden');
-                document.getElementById('add-section-panel').classList.remove('hidden');
-                
-                document.getElementById('page-settings-tab').classList.remove('bg-purple-100', 'text-purple-700');
-                document.getElementById('page-settings-tab').classList.add('text-gray-600', 'hover:bg-gray-100');
-                document.getElementById('section-editor-tab').classList.remove('bg-purple-100', 'text-purple-700');
-                document.getElementById('section-editor-tab').classList.add('text-gray-600', 'hover:bg-gray-100');
-                document.getElementById('add-section-tab').classList.remove('text-gray-600', 'hover:bg-gray-100');
-                document.getElementById('add-section-tab').classList.add('bg-purple-100', 'text-purple-700');
-                
-                document.getElementById('settings-panel-title').textContent = 'הוספת סקשן';
-            });
-            
-            // Back to list button
-            document.getElementById('back-to-list-btn').addEventListener('click', () => {
-                // Clear selection
-                if (selectedSection) {
-                    selectedSection.style.outline = 'none';
-                    selectedSection = null;
-                    activeSectionId = null;
-                }
-                
-                // Update sidebar
-                document.querySelectorAll('.section-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                
-                // Show page settings
-                document.getElementById('page-settings-panel').classList.remove('hidden');
-                document.getElementById('section-editor-panel').classList.add('hidden');
-                document.getElementById('add-section-panel').classList.add('hidden');
-                
-                document.getElementById('page-settings-tab').classList.remove('text-gray-600', 'hover:bg-gray-100');
-                document.getElementById('page-settings-tab').classList.add('bg-purple-100', 'text-purple-700');
-                document.getElementById('section-editor-tab').classList.remove('bg-purple-100', 'text-purple-700');
-                document.getElementById('section-editor-tab').classList.add('text-gray-600', 'hover:bg-gray-100');
-                document.getElementById('add-section-tab').classList.remove('bg-purple-100', 'text-purple-700');
-                document.getElementById('add-section-tab').classList.add('text-gray-600', 'hover:bg-gray-100');
-                
-                document.getElementById('settings-panel-title').textContent = 'הגדרות כלליות';
-                document.getElementById('back-to-list-btn').classList.add('hidden');
-            });
-            
-            // Section buttons
-            document.querySelectorAll('.section-button').forEach(button => {
-                button.addEventListener('click', () => {
-                    const sectionType = button.getAttribute('data-section');
-                    addSection(sectionType);
-                });
-            });
-            
-            // Add section button in sidebar
-            document.getElementById('add-section-btn').addEventListener('click', () => {
-                // Show add section panel
-                document.getElementById('page-settings-panel').classList.add('hidden');
-                document.getElementById('section-editor-panel').classList.add('hidden');
-                document.getElementById('add-section-panel').classList.remove('hidden');
-                
-                document.getElementById('page-settings-tab').classList.remove('bg-purple-100', 'text-purple-700');
-                document.getElementById('page-settings-tab').classList.add('text-gray-600', 'hover:bg-gray-100');
-                document.getElementById('section-editor-tab').classList.remove('bg-purple-100', 'text-purple-700');
-                document.getElementById('section-editor-tab').classList.add('text-gray-600', 'hover:bg-gray-100');
-                document.getElementById('add-section-tab').classList.remove('text-gray-600', 'hover:bg-gray-100');
-                document.getElementById('add-section-tab').classList.add('bg-purple-100', 'text-purple-700');
-                
-                document.getElementById('settings-panel-title').textContent = 'הוספת סקשן';
-            });
-            
-            // Section group filter
-            document.getElementById('section-group-filter').addEventListener('change', function() {
-                const selectedGroup = this.value;
-                
-                document.querySelectorAll('.section-group').forEach(group => {
-                    if (!selectedGroup || group.getAttribute('data-group') === selectedGroup) {
-                        group.style.display = 'block';
-                    } else {
-                        group.style.display = 'none';
-                    }
-                });
-            });
-            
-            // Save button
-            document.getElementById('save-button').addEventListener('click', () => {
-                saveContent();
-            });
-            
-            // Edit HTML button
-            document.getElementById('edit-html-btn').addEventListener('click', () => {
-                openHtmlEditor();
-            });
-            
-            // HTML Editor modal buttons
-            document.getElementById('close-html-editor').addEventListener('click', () => {
-                closeHtmlEditor();
-            });
-            
-            document.getElementById('cancel-html-edit').addEventListener('click', () => {
-                closeHtmlEditor();
-            });
-            
-            document.getElementById('apply-html-edit').addEventListener('click', () => {
-                applyHtmlEdit();
-            });
-            
-            // Remove section button
-            document.getElementById('remove-section-btn').addEventListener('click', () => {
-                removeSelectedSection();
-            });
-            
-            // Color scheme selector
-            document.getElementById('color-scheme').addEventListener('change', (e) => {
-                applyColorScheme(e.target.value);
-            });
-            
-            // Font selector
-            document.getElementById('font-family').addEventListener('change', (e) => {
-                applyFont(e.target.value);
-            });
-            
-            // Color pickers
-            document.getElementById('primary-color').addEventListener('input', (e) => {
-                document.getElementById('primary-color-text').value = e.target.value;
-                updateColors();
-            });
-            
-            document.getElementById('primary-color-text').addEventListener('input', (e) => {
-                if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
-                    document.getElementById('primary-color').value = e.target.value;
-                    updateColors();
-                }
-            });
-            
-            document.getElementById('secondary-color').addEventListener('input', (e) => {
-                document.getElementById('secondary-color-text').value = e.target.value;
-                updateColors();
-            });
-            
-            document.getElementById('secondary-color-text').addEventListener('input', (e) => {
-                if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
-                    document.getElementById('secondary-color').value = e.target.value;
-                    updateColors();
-                }
-            });
-            
-            // Initialize color scheme
-            applyColorScheme('default');
-            
-            // Initialize font
-            applyFont('Heebo, sans-serif');
-        });
-        
-        // Update colors
-        function updateColors() {
-            const primaryColor = document.getElementById('primary-color').value;
-            const secondaryColor = document.getElementById('secondary-color').value;
-            
-            const iframe = document.getElementById('preview-iframe');
-            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            
-            const style = iframeDoc.head.querySelector('style#color-scheme');
-            if (style) {
-                style.textContent = style.textContent
-                    .replace(/--primary-color: #[0-9a-f]{6}/i, `--primary-color: ${primaryColor}`)
-                    .replace(/--secondary-color: #[0-9a-f]{6}/i, `--secondary-color: ${secondaryColor}`);
-            }
-            
-            // Update current content
-            currentContent = iframeDoc.documentElement.outerHTML;
-        }
-        
-        // Add section to page
-        function addSection(sectionType) {
-            // Get section HTML from template
-            fetch(`sections/${sectionType}/template.html`)
-                .then(response => response.text())
-                .then(html => {
-                    // Insert into iframe content
-                    const iframe = document.getElementById('preview-iframe');
-                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-                    
-                    // Find where to insert the section (before the footer)
-                    const footer = iframeDoc.querySelector('footer');
-                    
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = html;
-                    const section = tempDiv.firstElementChild;
-                    
-                    // Add data attributes
-                    section.setAttribute('data-section-type', sectionType);
-                    section.setAttribute('data-title', sectionType.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()));
-                    section.id = `section-${Date.now()}`;
-                    
-                    if (footer) {
-                        iframeDoc.body.insertBefore(section, footer);
-                    } else {
-                        iframeDoc.body.appendChild(section);
-                    }
-                    
-                    // Update content
-                    currentContent = iframeDoc.documentElement.outerHTML;
-                    
-                    // Refresh preview to add events
-                    updatePreview();
-                    
-                    // Find and select the new section
-                    setTimeout(() => {
-                        const newSection = iframeDoc.querySelector(`[data-section-type="${sectionType}"]`);
-                        if (newSection) {
-                            selectSection(newSection, sectionsList.length - 1);
+                        // הוספת השדות למודל
+                        if (currentFormFields.length > 0) {
+                            currentFormFields.forEach((field, index) => {
+                                const fieldElement = createFieldUI(field, index);
+                                formFieldsContainer.appendChild(fieldElement);
+                            });
+                            
+                            // הפעלת drag & drop
+                            if (typeof Sortable !== 'undefined') {
+                                new Sortable(formFieldsContainer, {
+                                    animation: 150,
+                                    handle: '.handle',
+                                    ghostClass: 'sortable-ghost',
+                                    chosenClass: 'sortable-chosen',
+                                    dragClass: 'sortable-drag',
+                                    onEnd: function(evt) {
+                                        // סידור מחדש של השדות
+                                        const newOrder = Array.from(formFieldsContainer.children).map(element => 
+                                            parseInt(element.getAttribute('data-field-index'), 10)
+                                        );
+                                        
+                                        // עדכון השדות במערך
+                                        const reorderedFields = [];
+                                        newOrder.forEach(oldIndex => {
+                                            reorderedFields.push(currentFormFields[oldIndex]);
+                                        });
+                                        
+                                        // עדכון המערך
+                                        currentFormFields = reorderedFields;
+                                        
+                                        // עדכון הטופס במסגרת
+                                        updateFormInIframe();
+                                    }
+                                });
+                            }
+                            
+                            // עדכון ההצגה
+                            const formFieldsSection = document.getElementById('modal-form-fields-section');
+                            const noFieldsMessage = document.getElementById('modal-no-fields-message');
+                            
+                            if (formFieldsSection) {
+                                formFieldsSection.classList.remove('hidden');
+                            }
+                            
+                            if (noFieldsMessage) {
+                                noFieldsMessage.classList.add('hidden');
+                            }
+                            
+                            // עדכון מספר השדות
+                            const fieldsCountElement = document.getElementById('modal-fields-count');
+                            if (fieldsCountElement) {
+                                fieldsCountElement.textContent = currentFormFields.length;
+                            }
+                        } else {
+                            // הצגת הודעה שאין שדות
+                            const formFieldsSection = document.getElementById('modal-form-fields-section');
+                            const noFieldsMessage = document.getElementById('modal-no-fields-message');
+                            
+                            if (formFieldsSection) {
+                                formFieldsSection.classList.add('hidden');
+                            }
+                            
+                            if (noFieldsMessage) {
+                                noFieldsMessage.classList.remove('hidden');
+                            }
                         }
-                    }, 500);
-                })
-                .catch(error => {
-                    console.error('Error loading section template:', error);
-                    alert('שגיאה בטעינת תבנית הסקשן');
+                    }
+                    
+                    // טעינת נתוני הטופס
+                    const listSelect = document.getElementById('modal-form-list-select');
+                    const tagsInput = document.getElementById('modal-form-tag-input');
+                    const redirectCheckbox = document.getElementById('modal-redirect-checkbox');
+                    const redirectUrlContainer = document.getElementById('modal-redirect-url-container');
+                    const redirectUrlInput = document.getElementById('modal-redirect-url-input');
+                    
+                    if (listSelect) {
+                        const listId = currentForm.getAttribute('data-list-id') || '';
+                        listSelect.value = listId;
+                    }
+                    
+                    if (tagsInput) {
+                        const tags = currentForm.getAttribute('data-tags') || '';
+                        tagsInput.value = tags;
+                    }
+                    
+                    if (redirectCheckbox && redirectUrlContainer && redirectUrlInput) {
+                        const redirectUrl = currentForm.getAttribute('data-redirect') || '';
+                        
+                        if (redirectUrl) {
+                            redirectCheckbox.checked = true;
+                            redirectUrlContainer.classList.remove('hidden');
+                            redirectUrlInput.value = redirectUrl;
+                        } else {
+                            redirectCheckbox.checked = false;
+                            redirectUrlContainer.classList.add('hidden');
+                            redirectUrlInput.value = '';
+                        }
+                        
+                        // הגדרת אירוע שינוי מצב תיבת הסימון
+                        redirectCheckbox.addEventListener('change', function() {
+                            if (this.checked) {
+                                redirectUrlContainer.classList.remove('hidden');
+                            } else {
+                                redirectUrlContainer.classList.add('hidden');
+                            }
+                        });
+                    }
+                    
+                    // הגדרת אירועים
+                    const closeBtn = document.getElementById('close-form-settings-modal');
+                    const cancelBtn = document.getElementById('cancel-form-settings-btn');
+                    const saveBtn = document.getElementById('save-form-settings-btn');
+                    const addFieldBtn = document.getElementById('modal-add-form-field-btn');
+                    
+                    // פונקציית סגירת המודל
+                    const closeModal = () => {
+                        if (modalElement) {
+                            modalElement.remove();
+                        }
+                    };
+                    
+                    // לחצני סגירה
+                    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+                    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+                    
+                    // לחצן הוספת שדה
+                    if (addFieldBtn) {
+                        addFieldBtn.addEventListener('click', () => {
+                            showFieldEditModal();
+                        });
+                    }
+                    
+                    // לחצן שמירה
+                    if (saveBtn) {
+                        saveBtn.addEventListener('click', () => {
+                            // שמירת הנתונים לטופס
+                            if (listSelect) {
+                                currentForm.setAttribute('data-list-id', listSelect.value);
+                            }
+                            
+                            if (tagsInput) {
+                                currentForm.setAttribute('data-tags', tagsInput.value);
+                            }
+                            
+                            if (redirectCheckbox && redirectUrlInput) {
+                                if (redirectCheckbox.checked && redirectUrlInput.value) {
+                                    currentForm.setAttribute('data-redirect', redirectUrlInput.value);
+                                } else {
+                                    currentForm.removeAttribute('data-redirect');
+                                }
+                            }
+                            
+                            // עדכון הטופס במסגרת
+                            updateFormInIframe();
+                            
+                            // עדכון התוכן הכללי
+                            currentContent = iframeDoc.documentElement.outerHTML;
+                            
+                            // סגירת המודל
+                            closeModal();
+                        });
+                    }
                 });
+            }
         }
         
         // Remove selected section
@@ -1775,8 +1508,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const modals = [
         'templates-modal',
         'add-section-modal',
-        'html-editor-modal'
-        // הוסף כאן עוד מודלים אם יש
+        'html-editor-modal',
+        'form-settings-modal'
     ];
     
     // הפעלת הפונקציה על כל מודל
