@@ -665,6 +665,10 @@ mediaItems.forEach(item => {
             const buttons = section.querySelectorAll('a.btn, button, a.button, .btn, .button, a[class*="bg-"]');
             const images = section.querySelectorAll('img');
             
+            // Check if this is a contact form section
+            const isSectionContact = section.getAttribute('data-section-type') && section.getAttribute('data-section-type').includes('contact');
+            const hasForm = section.querySelector('form');
+            
             // טיפול בלחיצות על תמונות
             setupImageEvents(iframeDoc);
 
@@ -749,6 +753,74 @@ mediaItems.forEach(item => {
                         currentContent = iframeDoc.documentElement.outerHTML;
                     });
                 });
+            }
+            
+            // Form editor for contact sections
+            if (isSectionContact && hasForm) {
+                // Add separator
+                const formSeparator = document.createElement('div');
+                formSeparator.className = 'border-t border-gray-200 my-6 pt-6';
+                controlsContainer.appendChild(formSeparator);
+                
+                // Add form editor header
+                const formHeader = document.createElement('div');
+                formHeader.innerHTML = `
+                    <h3 class="text-lg font-medium text-purple-700 mb-4">הגדרות טופס</h3>
+                `;
+                controlsContainer.appendChild(formHeader);
+                
+                // Add form fields editor
+                const formEditor = document.createElement('div');
+                formEditor.id = 'form-fields-editor';
+                formEditor.innerHTML = `
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">שדות הטופס</label>
+                        <div id="form-fields-section">
+                            <div id="form-fields-container" class="space-y-2 mb-3"></div>
+                        </div>
+                        <div id="no-fields-message" class="text-center text-gray-500 py-3">
+                            <p>לא נמצאו שדות בטופס. הוסף שדה חדש!</p>
+                        </div>
+                        <button id="add-form-field-btn" type="button" class="mt-2 w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                            <i class="ri-add-line ml-1"></i> הוסף שדה חדש
+                        </button>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">הגדרות מתקדמות</label>
+                        <div class="bg-gray-50 p-3 rounded-md">
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">שייך לרשימת תפוצה</label>
+                                <select id="form-list-select" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                    <option value="">לא משויך (ברירת מחדל)</option>
+                                    <option value="list-1">רשימה ראשית</option>
+                                    <option value="list-2">מתעניינים</option>
+                                    <option value="list-3">לקוחות</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">תיוג</label>
+                                <input type="text" id="form-tag-input" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="הוסף תיוגים מופרדים בפסיק">
+                            </div>
+                            <div class="flex items-center mt-3">
+                                <input id="redirect-checkbox" type="checkbox" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="redirect-checkbox" class="mr-2 block text-sm text-gray-700">עבור לדף "תודה" לאחר שליחה</label>
+                            </div>
+                            <div id="redirect-url-container" class="mt-3 hidden">
+                                <input type="text" id="redirect-url-input" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="URL לדף תודה">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-sm font-medium text-gray-700">מספר השדות: </label>
+                            <span id="fields-count" class="text-sm font-medium text-purple-600">0</span>
+                        </div>
+                    </div>
+                `;
+                controlsContainer.appendChild(formEditor);
+                
+                // Initialize form editor
+                initFormEditor(section, iframeDoc);
             }
             
 
