@@ -769,7 +769,7 @@ if (isset($_SESSION['error'])) {
                             <div class="p-4 border-t step-details hidden">
                                 <?php
                                     // Parse step details
-                                    $actionConfig = json_decode($step['action_config'], true) ?? [];
+                                    $actionConfig = !empty($step['action_config']) ? json_decode($step['action_config'], true) : [];
                                     
                                     switch ($step['action_type']) {
                                         case 'wait':
