@@ -54,9 +54,16 @@
             </li>
             
             <li>
+                <a href="contact_lists.php" class="sidebar-link flex items-center px-4 py-3 text-gray-700 <?php echo $currentPage == 'contact_lists.php' || $currentPage == 'contact_list_create.php' || $currentPage == 'contact_list_edit.php' ? 'active' : ''; ?>">
+                    <i class="ri-contacts-book-line ml-3 text-xl"></i>
+                    <span>רשימות</span>
+                </a>
+            </li>
+            
+            <li>
                 <a href="subscribers.php" class="sidebar-link flex items-center px-4 py-3 text-gray-700 <?php echo $currentPage == 'subscribers.php' ? 'active' : ''; ?>">
                     <i class="ri-user-follow-line ml-3 text-xl"></i>
-                    <span>מנויים</span>
+                    <span>לידים</span>
                 </a>
             </li>
             

@@ -141,6 +141,21 @@ function generateSlug($pdo, $title, $table = 'landing_pages', $field = 'slug') {
 }
 
 /**
+ * Format date to standard format
+ *
+ * @param string $date Date to format
+ * @return string Formatted date
+ */
+function formatDate($date) {
+    if (empty($date)) {
+        return '';
+    }
+    
+    $timestamp = strtotime($date);
+    return date('d/m/Y', $timestamp);
+}
+
+/**
  * Format date to Hebrew friendly format
  *
  * @param string $date Date to format
