@@ -2,8 +2,8 @@
 require_once '../config/config.php';
 
 // Set page title
-$pageTitle = 'הוספת מנוי חדש';
-$pageDescription = 'הוספת מנוי חדש למערכת';
+$pageTitle = 'הוספת ליד חדש';
+$pageDescription = 'הוספת ליד חדש למערכת';
 
 // Include header
 include_once 'template/header.php';
@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             // Check plan limits
             if (hasReachedPlanLimits($pdo, $userId, 'leads')) {
-                $error = 'הגעת למכסת המנויים החודשית שלך. שקול לשדרג את החשבון.';
+                $error = 'הגעת למכסת הלידים החודשית שלך. שקול לשדרג את החשבון.';
             } else {
                 // Prepare custom fields as JSON
                 $customFields = [];
@@ -87,17 +87,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ]);
                     
                     if ($result) {
-                        $_SESSION['success'] = 'המנוי נוסף בהצלחה';
+                        $_SESSION['success'] = 'הליד נוסף בהצלחה';
                         redirect('subscribers.php');
                     } else {
-                        $error = 'אירעה שגיאה בעת הוספת המנוי';
+                        $error = 'אירעה שגיאה בעת הוספת הליד';
                     }
                 } catch (PDOException $e) {
                     // Check if table exists
                     if ($e->getCode() == '42S02') { // Table doesn't exist
-                        $error = 'טבלת המנויים אינה קיימת במסד הנתונים';
+                        $error = 'טבלת הלידים אינה קיימת במסד הנתונים';
                     } else {
-                        $error = 'אירעה שגיאה בעת הוספת המנוי: ' . $e->getMessage();
+                        $error = 'אירעה שגיאה בעת הוספת הליד: ' . $e->getMessage();
                     }
                 }
             }
@@ -108,8 +108,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="bg-white rounded-lg shadow overflow-hidden">
     <div class="p-6 border-b">
-        <h2 class="text-xl font-medium">הוספת מנוי חדש</h2>
-        <p class="text-gray-500 text-sm mt-1">מלא את הפרטים להוספת מנוי חדש למערכת</p>
+        <h2 class="text-xl font-medium">הוספת ליד חדש</h2>
+        <p class="text-gray-500 text-sm mt-1">מלא את הפרטים להוספת ליד חדש למערכת</p>
     </div>
     
     <form method="POST" action="" class="p-6">
@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                            <?php if ($isSubscribed) echo 'checked'; ?>
                            class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
                     <label for="is_subscribed" class="ml-2 block text-sm text-gray-700">
-                        מנוי פעיל (יקבל הודעות דיוור)
+                        ליד פעיל (יקבל הודעות דיוור)
                     </label>
                 </div>
             </div>
@@ -198,7 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Custom Fields -->
         <div class="mt-8">
             <h3 class="text-lg font-medium text-gray-700 mb-3">שדות מותאמים אישית</h3>
-            <p class="text-sm text-gray-500 mb-4">באפשרותך להוסיף מידע נוסף על המנוי</p>
+            <p class="text-sm text-gray-500 mb-4">באפשרותך להוסיף מידע נוסף על הליד</p>
             
             <div id="custom-fields-container" class="space-y-3">
                 <div class="grid grid-cols-2 gap-4">
@@ -222,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ביטול
             </a>
             <button type="submit" class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
-                הוסף מנוי
+                הוסף ליד
             </button>
         </div>
     </form>

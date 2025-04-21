@@ -40,6 +40,9 @@ function initFormEditor(section, iframeDoc) {
     // Load existing form fields
     loadExistingFormFields();
     
+    // Load existing form attributes
+    loadExistingFormAttributes();
+    
     // Setup event listeners
     setupFormEditorEventListeners();
     
@@ -392,8 +395,22 @@ function setupFormEditorEventListeners() {
     // Form tag input
     const formTagInput = document.getElementById('form-tag-input');
     if (formTagInput) {
+        // שימוש באירוע input במקום change כדי לתפוס שינויים מיידיים
+        formTagInput.addEventListener('input', () => {
+            updateFormAttributes();
+        });
+        
+        // תפיסת אירוע change גם כן למקרה של שינויים באמצעים אחרים
         formTagInput.addEventListener('change', () => {
             updateFormAttributes();
+        });
+        
+        // הוסף אירוע blur לשמירה כשהמשתמש עוזב את השדה
+        formTagInput.addEventListener('blur', () => {
+            updateFormAttributes();
+            
+            // עדכן את הטופס באייפריים כדי לוודא שהתגיות נשמרות
+            updateFormInIframe();
         });
     }
 }
@@ -693,6 +710,13 @@ function updateFormInIframe() {
     const previewForm = currentForm;
     if (!previewForm) return;
     
+    // שמור את המאפיינים (data attributes) של הטופס לפני ניקוי
+    const formDataAttributes = {
+        tags: previewForm.getAttribute('data-tags'),
+        list: previewForm.getAttribute('data-list'),
+        redirect: previewForm.getAttribute('data-redirect')
+    };
+    
     // נקה את הטופס הנוכחי (שמור על כפתור שליחה אם קיים)
     let submitButton = null;
     // שמור על כפתור השליחה אם קיים
@@ -704,6 +728,17 @@ function updateFormInIframe() {
     
     // נקה את הטופס
     previewForm.innerHTML = '';
+    
+    // שחזר את המאפיינים של הטופס
+    if (formDataAttributes.tags) {
+        previewForm.setAttribute('data-tags', formDataAttributes.tags);
+    }
+    if (formDataAttributes.list) {
+        previewForm.setAttribute('data-list', formDataAttributes.list);
+    }
+    if (formDataAttributes.redirect) {
+        previewForm.setAttribute('data-redirect', formDataAttributes.redirect);
+    }
     
     // הוסף את כל השדות לטופס
     originalFields.forEach(field => {
@@ -812,6 +847,16 @@ function updateFormInIframe() {
         previewForm.appendChild(fieldContainer);
     });
     
+    // הוסף שדה נסתר לתגיות אם יש
+    const formTags = previewForm.getAttribute('data-tags');
+    if (formTags) {
+        const tagsField = document.createElement('input');
+        tagsField.type = 'hidden';
+        tagsField.name = 'tags';
+        tagsField.value = formTags;
+        previewForm.appendChild(tagsField);
+    }
+    
     // הוסף בחזרה את כפתור השליחה אם היה קיים
     if (submitButton) {
         previewForm.appendChild(submitButton);
@@ -871,4 +916,48 @@ function updateFormAttributes() {
     if (formIframeDoc) {
         window.parent.currentContent = formIframeDoc.documentElement.outerHTML;
     }
-} 
+}
+
+/**
+ * Load existing form attributes (tags, redirect, etc.)
+ */
+function loadExistingFormAttributes() {
+    if (!currentForm) return;
+    
+    // Load tags if exist
+    const formTags = currentForm.getAttribute('data-tags');
+    const formTagInput = document.getElementById('form-tag-input');
+    if (formTagInput && formTags) {
+        formTagInput.value = formTags;
+    }
+    
+    // Load list selection if exists
+    const formList = currentForm.getAttribute('data-list');
+    const formListSelect = document.getElementById('form-list-select');
+    if (formListSelect && formList) {
+        formListSelect.value = formList;
+    }
+}
+
+// הוסף אירוע לכפתור השמירה בדף העורך
+document.addEventListener('DOMContentLoaded', function() {
+    // פנה לחלון האב שהוא העורך הראשי
+    if (window.parent && window.parent.document) {
+        const saveButton = window.parent.document.querySelector('#save-page-button, .save-page-button');
+        if (saveButton) {
+            saveButton.addEventListener('click', function() {
+                // וודא שהתגיות מעודכנות לפני השמירה
+                if (currentForm) {
+                    updateFormAttributes();
+                    updateFormInIframe();
+                    
+                    console.log('Form attributes updated before save:', {
+                        tags: currentForm.getAttribute('data-tags'),
+                        list: currentForm.getAttribute('data-list'),
+                        redirect: currentForm.getAttribute('data-redirect')
+                    });
+                }
+            });
+        }
+    }
+}); 

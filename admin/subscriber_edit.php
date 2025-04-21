@@ -2,8 +2,8 @@
 require_once '../config/config.php';
 
 // Set page title
-$pageTitle = 'עריכת מנוי';
-$pageDescription = 'עריכת פרטי מנוי קיים';
+$pageTitle = 'עריכת ליד';
+$pageDescription = 'עריכת פרטי ליד קיים';
 
 // Get user ID and subscriber ID
 $userId = $_SESSION['user_id'] ?? 0;
@@ -22,12 +22,12 @@ try {
     $subscriber = $stmt->fetch();
 } catch (PDOException $e) {
     // Table might not exist
-    $_SESSION['error'] = 'אירעה שגיאה בעת טעינת פרטי המנוי';
+    $_SESSION['error'] = 'אירעה שגיאה בעת טעינת פרטי הליד';
     redirect('subscribers.php');
 }
 
 if (!$subscriber) {
-    $_SESSION['error'] = 'המנוי המבוקש לא נמצא או שאין לך הרשאה לערוך אותו';
+    $_SESSION['error'] = 'הליד המבוקש לא נמצא או שאין לך הרשאה לערוך אותו';
     redirect('subscribers.php');
 }
 
@@ -42,6 +42,17 @@ $phone = $subscriber['phone'];
 $landingPageId = $subscriber['landing_page_id'];
 $isSubscribed = $subscriber['is_subscribed'];
 $customFields = !empty($subscriber['custom_fields']) ? json_decode($subscriber['custom_fields'], true) : [];
+
+// סינון שדות מערכת מהשדות המותאמים
+if (is_array($customFields)) {
+    // מסיר שדות מערכת שמתחילים עם custom_field
+    foreach ($customFields as $key => $value) {
+        if ($key === 'custom_field' || preg_match('/^custom_field_/', $key)) {
+            unset($customFields[$key]);
+        }
+    }
+}
+
 $error = '';
 
 // Get landing pages for dropdown
@@ -117,13 +128,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
                 
                 if ($result) {
-                    $_SESSION['success'] = 'פרטי המנוי עודכנו בהצלחה';
+                    $_SESSION['success'] = 'פרטי הליד עודכנו בהצלחה';
                     redirect('subscribers.php');
                 } else {
-                    $error = 'אירעה שגיאה בעת עדכון פרטי המנוי';
+                    $error = 'אירעה שגיאה בעת עדכון פרטי הליד';
                 }
             } catch (PDOException $e) {
-                $error = 'אירעה שגיאה בעת עדכון פרטי המנוי: ' . $e->getMessage();
+                $error = 'אירעה שגיאה בעת עדכון פרטי הליד: ' . $e->getMessage();
             }
         }
     }
@@ -133,8 +144,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="bg-white rounded-lg shadow overflow-hidden">
     <div class="p-6 border-b flex justify-between items-center">
         <div>
-            <h2 class="text-xl font-medium">עריכת מנוי</h2>
-            <p class="text-gray-500 text-sm mt-1">עריכת פרטי המנוי <?php echo htmlspecialchars($email); ?></p>
+            <h2 class="text-xl font-medium">עריכת ליד</h2>
+            <p class="text-gray-500 text-sm mt-1">עריכת פרטי הליד <?php echo htmlspecialchars($email); ?></p>
         </div>
         
         <div>
@@ -244,7 +255,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Custom Fields -->
         <div class="mt-8">
             <h3 class="text-lg font-medium text-gray-700 mb-3">שדות מותאמים אישית</h3>
-            <p class="text-sm text-gray-500 mb-4">באפשרותך להוסיף מידע נוסף על המנוי</p>
+            
+            <?php 
+            // בדוק האם יש תגיות מהטופס ואם כן, הצג אותן בצורה מיוחדת
+            if (isset($customFields['_form_tags'])): 
+                $tags = $customFields['_form_tags'];
+                // הסר את שדה התגיות מהשדות הרגילים כדי שלא יופיע פעמיים
+                unset($customFields['_form_tags']);
+            ?>
+            <div class="bg-gray-50 p-4 rounded-md mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">תגיות שנוספו מהטופס:</label>
+                <div class="flex flex-wrap gap-2">
+                    <?php foreach (explode(',', $tags) as $tag): ?>
+                    <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                        <?php echo htmlspecialchars(trim($tag)); ?>
+                    </span>
+                    <?php endforeach; ?>
+                </div>
+                <input type="hidden" name="custom_fields[key][]" value="_form_tags">
+                <input type="hidden" name="custom_fields[value][]" value="<?php echo htmlspecialchars($tags); ?>">
+            </div>
+            <?php endif; ?>
+            
+            <p class="text-sm text-gray-500 mb-4">באפשרותך להוסיף מידע נוסף על הליד</p>
             
             <div id="custom-fields-container" class="space-y-3">
                 <?php if (!empty($customFields)): ?>
@@ -294,9 +327,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <a href="subscribers.php?delete=<?php echo $subscriberId; ?>" 
                    class="mr-2 px-4 py-2 border border-red-300 text-red-700 rounded-md hover:bg-red-50" 
-                   data-confirm="האם אתה בטוח שברצונך למחוק מנוי זה?">
+                   data-confirm="האם אתה בטוח שברצונך למחוק ליד זה?">
                     <i class="ri-delete-bin-line ml-1"></i>
-                    מחק מנוי
+                    מחק ליד
                 </a>
             </div>
             

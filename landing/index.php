@@ -60,6 +60,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Silently log the error but don't show to the user
             error_log('User ' . $landingPage['user_id'] . ' has reached lead limit');
         } else {
+            // Extract HTML content from the landing page to find form tags if needed
+            $formTags = null;
+            preg_match('/<form[^>]*data-tags=["\']([^"\']*)["\'][^>]*>/i', $landingPage['content'], $matches);
+            if (isset($matches[1]) && !empty($matches[1])) {
+                $formTags = $matches[1];
+                error_log('Found data-tags in the form HTML: ' . $formTags);
+            }
+            
             // Extract custom fields from POST data
             $customFields = [];
             foreach ($_POST as $key => $value) {
@@ -67,6 +75,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $customFields[$key] = sanitize($value);
                 }
             }
+            
+            // אם יש תגיות, נוודא שהן נשמרות בצורה מיוחדת
+            if (isset($_POST['tags']) && !empty($_POST['tags'])) {
+                $tags = sanitize($_POST['tags']);
+                // שמירת התגיות בשדה מותאם מיוחד לתגיות
+                $customFields['_form_tags'] = $tags;
+                
+                // לוג לצורכי דיבאג
+                error_log('Tags found in form submission: ' . $tags);
+            } 
+            // אם לא נמצאו תגיות בפוסט אבל יש לנו תגיות מהמאפיין data-tags
+            else if ($formTags) {
+                $customFields['_form_tags'] = $formTags;
+                error_log('Using tags from data-tags attribute: ' . $formTags);
+            }
+            
+            // לוג לצורכי דיבאג של כל הפוסט
+            error_log('POST data: ' . print_r($_POST, true));
+            error_log('Custom Fields: ' . print_r($customFields, true));
             
             // Check if subscriber already exists
             $stmt = $pdo->prepare("SELECT id FROM subscribers WHERE email = ? AND user_id = ?");
