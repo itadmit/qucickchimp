@@ -883,7 +883,7 @@ mediaItems.forEach(item => {
                 // Add form editor header
                 const formHeader = document.createElement('div');
                 formHeader.innerHTML = `
-                    <h3 class="text-lg font-medium text-purple-700 mb-4">הגדרות טופס</h3>
+                    <h3 class="text-lg font-medium text-purple-700 mb-4">הגדרות טופס יצירת קשר</h3>
                 `;
                 controlsContainer.appendChild(formHeader);
                 
@@ -924,30 +924,51 @@ mediaItems.forEach(item => {
                                 </button>
                             </div>
                             
+                            <!-- תפריט לשוניות -->
+                            <div class="flex border-b overflow-x-auto whitespace-nowrap">
+                                <button id="form-fields-tab" class="py-2 px-4 text-center bg-purple-100 text-purple-700 font-medium">
+                                    שדות טופס
+                                </button>
+                                <button id="form-general-tab" class="py-2 px-4 text-center text-gray-600 hover:bg-gray-100 font-medium">
+                                    הגדרות כלליות
+                                </button>
+                                <button id="form-thankyou-tab" class="py-2 px-4 text-center text-gray-600 hover:bg-gray-100 font-medium">
+                                    עמוד תודה
+                                </button>
+                                <button id="form-notifications-tab" class="py-2 px-4 text-center text-gray-600 hover:bg-gray-100 font-medium">
+                                    התראות
+                                </button>
+                                <button id="form-advanced-tab" class="py-2 px-4 text-center text-gray-600 hover:bg-gray-100 font-medium">
+                                    הגדרות מתקדמות
+                                </button>
+                            </div>
+                            
                             <div class="overflow-y-auto flex-grow p-3">
-                                <!-- Form Fields Container -->
-                                <div class="mb-4">
-                                    <div class="flex justify-between items-center mb-3">
-                                        <h4 class="text-md font-medium text-gray-700">שדות הטופס</h4>
-                                        <span id="modal-fields-count" class="text-sm font-medium text-purple-600">0</span>
+                                <!-- לשונית שדות הטופס -->
+                                <div id="form-fields-panel" class="tab-panel">
+                                    <div class="mb-4">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <h4 class="text-md font-medium text-gray-700">שדות הטופס</h4>
+                                            <span id="modal-fields-count" class="text-sm font-medium text-purple-600">0</span>
+                                        </div>
+                                        
+                                        <div id="modal-form-fields-section">
+                                            <div id="modal-form-fields-container" class="space-y-1 mb-2"></div>
+                                        </div>
+                                        <div id="modal-no-fields-message" class="text-center text-gray-500 py-3">
+                                            <p>לא נמצאו שדות בטופס. הוסף שדה חדש!</p>
+                                        </div>
+                                        <button id="modal-add-form-field-btn" type="button" class="mt-2 w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-purple-500">
+                                            <i class="ri-add-line ml-1"></i> הוסף שדה חדש
+                                        </button>
                                     </div>
-                                    
-                                    <div id="modal-form-fields-section">
-                                        <div id="modal-form-fields-container" class="space-y-1 mb-2"></div>
-                                    </div>
-                                    <div id="modal-no-fields-message" class="text-center text-gray-500 py-3">
-                                        <p>לא נמצאו שדות בטופס. הוסף שדה חדש!</p>
-                                    </div>
-                                    <button id="modal-add-form-field-btn" type="button" class="mt-2 w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-purple-500">
-                                        <i class="ri-add-line ml-1"></i> הוסף שדה חדש
-                                    </button>
                                 </div>
                                 
-                                <!-- Advanced Settings -->
-                                <div class="border-t border-gray-200 pt-4">
-                                    <h4 class="text-md font-medium text-gray-700 mb-3">הגדרות מתקדמות</h4>
-                                    
-                                    <div class="bg-gray-50 p-3 rounded-md">
+                                <!-- לשונית הגדרות כלליות -->
+                                <div id="form-general-panel" class="tab-panel hidden">
+                                    <div class="p-3 rounded-md bg-gray-50">
+                                        <h4 class="text-md font-medium text-gray-700 mb-3">הגדרות רשימת תפוצה</h4>
+                                        
                                         <div class="mb-3">
                                             <label class="block text-sm font-medium text-gray-700 mb-1">שייך לרשימת תפוצה</label>
                                             <select id="modal-form-list-select" class="block w-full py-1.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
@@ -973,14 +994,64 @@ mediaItems.forEach(item => {
                                             <label class="block text-sm font-medium text-gray-700 mb-1">תיוג</label>
                                             <input type="text" id="modal-form-tag-input" class="block w-full py-1.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="הוסף תיוגים מופרדים בפסיק">
                                         </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- לשונית הגדרות עמוד תודה -->
+                                <div id="form-thankyou-panel" class="tab-panel hidden">
+                                    <div class="p-3 rounded-md bg-gray-50">
+                                        <h4 class="text-md font-medium text-gray-700 mb-3">הגדרות עמוד תודה</h4>
                                         
-                                        <div class="flex items-center mt-3">
-                                            <input id="modal-redirect-checkbox" type="checkbox" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
-                                            <label for="modal-redirect-checkbox" class="mr-2 block text-sm text-gray-700">עבור לדף "תודה" לאחר שליחה</label>
+                                        <div class="mb-3">
+                                            <div class="flex items-center mb-2">
+                                                <input id="modal-redirect-checkbox" type="checkbox" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                                <label for="modal-redirect-checkbox" class="mr-2 block text-sm text-gray-700">
+                                                    עבור לדף "תודה" אחר לאחר שליחה
+                                                </label>
+                                            </div>
+                                            
+                                            <div id="modal-redirect-url-container" class="mt-2 hidden">
+                                                <input type="text" id="modal-redirect-url-input" class="block w-full py-1.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="URL לדף תודה">
+                                            </div>
                                         </div>
                                         
-                                        <div id="modal-redirect-url-container" class="mt-2 hidden">
-                                            <input type="text" id="modal-redirect-url-input" class="block w-full py-1.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="URL לדף תודה">
+                                        <div class="mb-3">
+                                            <div class="flex items-center mb-2">
+                                                <input id="modal-thankyou-message-checkbox" type="checkbox" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                                <label for="modal-thankyou-message-checkbox" class="mr-2 block text-sm text-gray-700">
+                                                    הצג הודעת תודה מותאמת אישית
+                                                </label>
+                                            </div>
+                                            
+                                            <div id="modal-thankyou-message-container" class="mt-2 hidden">
+                                                <textarea id="modal-thankyou-message-input" class="block w-full py-1.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" rows="3" placeholder="הזן הודעת תודה מותאמת אישית שתוצג לאחר שליחת הטופס"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- לשונית הגדרות התראות -->
+                                <div id="form-notifications-panel" class="tab-panel hidden">
+                                    <div class="p-3 rounded-md bg-gray-50">
+                                        <h4 class="text-md font-medium text-gray-700 mb-3">הגדרות התראות</h4>
+                                        
+                                        <div class="mb-3">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">שלח התראה על פניה חדשה למיילים</label>
+                                            <textarea id="modal-notification-emails" class="block w-full py-1.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" rows="2" placeholder="הזן כתובות מייל מופרדות בפסיק לקבלת התראה על פניות חדשות"></textarea>
+                                            <p class="text-xs text-gray-500 mt-1">דוגמה: email1@example.com, email2@example.com</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- לשונית הגדרות מתקדמות -->
+                                <div id="form-advanced-panel" class="tab-panel hidden">
+                                    <div class="p-3 rounded-md bg-gray-50">
+                                        <h4 class="text-md font-medium text-gray-700 mb-3">הגדרות וובהוק</h4>
+                                        
+                                        <div class="mb-3">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">URL לוובהוק</label>
+                                            <input type="text" id="modal-webhook-url" class="block w-full py-1.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="https://example.com/webhook">
+                                            <p class="text-xs text-gray-500 mt-1">הכתובת אליה יישלחו הנתונים אחרי שליחת הטופס</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1077,13 +1148,85 @@ mediaItems.forEach(item => {
                         }
                     }
                     
+                    // הפעלת אירועי לשוניות
+                    const fieldsTab = document.getElementById('form-fields-tab');
+                    const generalTab = document.getElementById('form-general-tab');
+                    const thankyouTab = document.getElementById('form-thankyou-tab');
+                    const notificationsTab = document.getElementById('form-notifications-tab');
+                    const advancedTab = document.getElementById('form-advanced-tab');
+                    
+                    const fieldsPanel = document.getElementById('form-fields-panel');
+                    const generalPanel = document.getElementById('form-general-panel');
+                    const thankyouPanel = document.getElementById('form-thankyou-panel');
+                    const notificationsPanel = document.getElementById('form-notifications-panel');
+                    const advancedPanel = document.getElementById('form-advanced-panel');
+                    
+                    // הגדרת אירועים
+                    const closeBtn = document.getElementById('close-form-settings-modal');
+                    const cancelBtn = document.getElementById('cancel-form-settings-btn');
+                    const saveBtn = document.getElementById('save-form-settings-btn');
+                    const addFieldBtn = document.getElementById('modal-add-form-field-btn');
+                    
+                    // פונקציית סגירת המודל
+                    const closeModal = () => {
+                        if (modalElement) {
+                            modalElement.remove();
+                        }
+                    };
+                    
+                    // לחצני סגירה
+                    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+                    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+                    
+                    // לחצן הוספת שדה
+                    if (addFieldBtn) {
+                        addFieldBtn.addEventListener('click', () => {
+                            showFieldEditModal();
+                        });
+                    }
+                    
+                    // פונקציה למעבר בין לשוניות
+                    function switchToTab(activeTab, activePanel) {
+                        // הסרת מצב פעיל מכל הלשוניות והפאנלים
+                        [fieldsTab, generalTab, thankyouTab, notificationsTab, advancedTab].forEach(tab => {
+                            tab.classList.remove('bg-purple-100', 'text-purple-700');
+                            tab.classList.add('text-gray-600', 'hover:bg-gray-100');
+                        });
+                        
+                        [fieldsPanel, generalPanel, thankyouPanel, notificationsPanel, advancedPanel].forEach(panel => {
+                            panel.classList.add('hidden');
+                        });
+                        
+                        // הפעלת הלשונית והפאנל הנבחרים
+                        activeTab.classList.remove('text-gray-600', 'hover:bg-gray-100');
+                        activeTab.classList.add('bg-purple-100', 'text-purple-700');
+                        activePanel.classList.remove('hidden');
+                    }
+                    
+                    // אירועי לחיצה על הלשוניות
+                    fieldsTab.addEventListener('click', () => switchToTab(fieldsTab, fieldsPanel));
+                    generalTab.addEventListener('click', () => switchToTab(generalTab, generalPanel));
+                    thankyouTab.addEventListener('click', () => switchToTab(thankyouTab, thankyouPanel));
+                    notificationsTab.addEventListener('click', () => switchToTab(notificationsTab, notificationsPanel));
+                    advancedTab.addEventListener('click', () => switchToTab(advancedTab, advancedPanel));
+                    
+                    // הפעלת אירועי הסתרה/הצגה של שדות נוספים
+                    const thankyouMessageCheckbox = document.getElementById('modal-thankyou-message-checkbox');
+                    
                     // טעינת נתוני הטופס
                     const listSelect = document.getElementById('modal-form-list-select');
                     const tagsInput = document.getElementById('modal-form-tag-input');
                     const redirectCheckbox = document.getElementById('modal-redirect-checkbox');
                     const redirectUrlContainer = document.getElementById('modal-redirect-url-container');
                     const redirectUrlInput = document.getElementById('modal-redirect-url-input');
+                  
+                    const thankyouMessageContainer = document.getElementById('modal-thankyou-message-container');
+                    const thankyouMessageInput = document.getElementById('modal-thankyou-message-input');
+                    const notificationEmailsInput = document.getElementById('modal-notification-emails');
+                    const webhookUrlInput = document.getElementById('modal-webhook-url');
                     
+                   
+
                     if (listSelect) {
                         const listId = currentForm.getAttribute('data-list-id') || '';
                         listSelect.value = listId;
@@ -1117,48 +1260,88 @@ mediaItems.forEach(item => {
                         });
                     }
                     
-                    // הגדרת אירועים
-                    const closeBtn = document.getElementById('close-form-settings-modal');
-                    const cancelBtn = document.getElementById('cancel-form-settings-btn');
-                    const saveBtn = document.getElementById('save-form-settings-btn');
-                    const addFieldBtn = document.getElementById('modal-add-form-field-btn');
-                    
-                    // פונקציית סגירת המודל
-                    const closeModal = () => {
-                        if (modalElement) {
-                            modalElement.remove();
+                    if (thankyouMessageCheckbox && thankyouMessageContainer && thankyouMessageInput) {
+                        const thankyouMessage = currentForm.getAttribute('data-thank-you-message') || '';
+                        
+                        if (thankyouMessage) {
+                            thankyouMessageCheckbox.checked = true;
+                            thankyouMessageContainer.classList.remove('hidden');
+                            thankyouMessageInput.value = thankyouMessage;
+                        } else {
+                            thankyouMessageCheckbox.checked = false;
+                            thankyouMessageContainer.classList.add('hidden');
+                            thankyouMessageInput.value = '';
                         }
-                    };
-                    
-                    // לחצני סגירה
-                    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-                    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
-                    
-                    // לחצן הוספת שדה
-                    if (addFieldBtn) {
-                        addFieldBtn.addEventListener('click', () => {
-                            showFieldEditModal();
+                        
+                        // הגדרת אירוע שינוי מצב תיבת הסימון
+                        thankyouMessageCheckbox.addEventListener('change', function() {
+                            if (this.checked) {
+                                thankyouMessageContainer.classList.remove('hidden');
+                            } else {
+                                thankyouMessageContainer.classList.add('hidden');
+                            }
                         });
                     }
                     
-                    // לחצן שמירה
+                    if (notificationEmailsInput) {
+                        const notificationEmails = currentForm.getAttribute('data-notification-emails') || '';
+                        notificationEmailsInput.value = notificationEmails;
+                    }
+                    
+                    if (webhookUrlInput) {
+                        const webhookUrl = currentForm.getAttribute('data-webhook-url') || '';
+                        webhookUrlInput.value = webhookUrl;
+                    }
+                    
+                    // לחצן הוספת שדה
                     if (saveBtn) {
-                        saveBtn.addEventListener('click', () => {
+                        saveBtn.addEventListener('click', function() {
                             // שמירת הנתונים לטופס
-                            if (listSelect) {
-                                currentForm.setAttribute('data-list-id', listSelect.value);
+                            const listId = document.getElementById('modal-form-list-select').value;
+                            const tags = document.getElementById('modal-form-tag-input').value;
+                            const redirectCheckbox = document.getElementById('modal-redirect-checkbox');
+                            const redirectUrl = redirectCheckbox.checked ? document.getElementById('modal-redirect-url-input').value : '';
+                            const thankyouMessageCheckbox = document.getElementById('modal-thankyou-message-checkbox');
+                            const thankyouMessage = thankyouMessageCheckbox.checked ? document.getElementById('modal-thankyou-message-input').value : '';
+                            const notificationEmails = document.getElementById('modal-notification-emails').value;
+                            const webhookUrl = document.getElementById('modal-webhook-url').value;
+                            
+                            // עדכון מאפייני הטופס
+                            currentForm.setAttribute('data-list-id', listId);
+                            currentForm.setAttribute('data-tags', tags);
+                            
+                            if (redirectCheckbox.checked && redirectUrl) {
+                                currentForm.setAttribute('data-redirect', redirectUrl);
+                            } else {
+                                currentForm.removeAttribute('data-redirect');
                             }
                             
-                            if (tagsInput) {
-                                currentForm.setAttribute('data-tags', tagsInput.value);
+                            if (thankyouMessageCheckbox.checked && thankyouMessage) {
+                                currentForm.setAttribute('data-thank-you-message', thankyouMessage);
+                            } else {
+                                currentForm.removeAttribute('data-thank-you-message');
                             }
                             
-                            if (redirectCheckbox && redirectUrlInput) {
-                                if (redirectCheckbox.checked && redirectUrlInput.value) {
-                                    currentForm.setAttribute('data-redirect', redirectUrlInput.value);
-                                } else {
-                                    currentForm.removeAttribute('data-redirect');
-                                }
+                            if (notificationEmails.trim()) {
+                                currentForm.setAttribute('data-notification-emails', notificationEmails.trim());
+                            } else {
+                                currentForm.removeAttribute('data-notification-emails');
+                            }
+                            
+                            if (webhookUrl.trim()) {
+                                currentForm.setAttribute('data-webhook-url', webhookUrl.trim());
+                            } else {
+                                currentForm.removeAttribute('data-webhook-url');
+                            }
+                            
+                            // שמירת מזהה הטופס אם אין
+                            if (!currentForm.id) {
+                                currentForm.id = 'form-' + Date.now();
+                            }
+                            
+                            // בדיקה אם הטופס כבר יש לו מזהה form-id
+                            if (!currentForm.getAttribute('data-form-id')) {
+                                currentForm.setAttribute('data-form-id', currentForm.id);
                             }
                             
                             // עדכון הטופס במסגרת
@@ -1171,6 +1354,15 @@ mediaItems.forEach(item => {
                             closeModal();
                         });
                     }
+
+                    thankyouMessageCheckbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            thankyouMessageContainer.classList.remove('hidden');
+                        } else {
+                            thankyouMessageContainer.classList.add('hidden');
+                        }
+                    });
+                    
                 });
             }
         }

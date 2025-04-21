@@ -76,6 +76,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $listId = $listMatches[1];
                 error_log('Found data-list-id in the form HTML: ' . $listId);
             }
+
+            // חילוץ מזהה הטופס
+            $formId = null;
+            preg_match('/<form[^>]*data-form-id=["\']([^"\']*)["\'][^>]*>/i', $landingPage['content'], $formIdMatches);
+            if (isset($formIdMatches[1]) && !empty($formIdMatches[1])) {
+                $formId = $formIdMatches[1];
+                error_log('Found data-form-id in the form HTML: ' . $formId);
+            }
+
+            // חילוץ נתוני וובהוק
+            $webhookUrl = null;
+            preg_match('/<form[^>]*data-webhook-url=["\']([^"\']*)["\'][^>]*>/i', $landingPage['content'], $webhookMatches);
+            if (isset($webhookMatches[1]) && !empty($webhookMatches[1])) {
+                $webhookUrl = $webhookMatches[1];
+                error_log('Found data-webhook-url in the form HTML: ' . $webhookUrl);
+            }
+
+            // חילוץ הודעת תודה מותאמת אישית
+            $thankYouMessage = null;
+            preg_match('/<form[^>]*data-thank-you-message=["\']([^"\']*)["\'][^>]*>/i', $landingPage['content'], $thankYouMatches);
+            if (isset($thankYouMatches[1]) && !empty($thankYouMatches[1])) {
+                $thankYouMessage = $thankYouMatches[1];
+                error_log('Found data-thank-you-message in the form HTML: ' . $thankYouMessage);
+            }
+
+            // חילוץ כתובות מייל להתראות
+            $notificationEmails = null;
+            preg_match('/<form[^>]*data-notification-emails=["\']([^"\']*)["\'][^>]*>/i', $landingPage['content'], $notificationMatches);
+            if (isset($notificationMatches[1]) && !empty($notificationMatches[1])) {
+                $notificationEmails = $notificationMatches[1];
+                error_log('Found data-notification-emails in the form HTML: ' . $notificationEmails);
+            }
             
             // Extract custom fields from POST data
             $customFields = [];
@@ -170,10 +202,135 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
                 
+                // שליחת התראה במייל אם הוגדרו כתובות מייל להתראות
+                if ($notificationEmails) {
+                    $emailAddresses = explode(',', $notificationEmails);
+                    $emailAddresses = array_map('trim', $emailAddresses);
+                    
+                    foreach ($emailAddresses as $emailAddress) {
+                        if (filter_var($emailAddress, FILTER_VALIDATE_EMAIL)) {
+                            // נושא המייל
+                            $subject = 'התראה על פנייה חדשה מדף הנחיתה: ' . $landingPage['title'];
+                            
+                            // תוכן המייל
+                            $message = "
+                                <html>
+                                <head>
+                                    <title>פנייה חדשה מדף הנחיתה</title>
+                                    <style>
+                                        body { font-family: Arial, sans-serif; direction: rtl; }
+                                        .container { padding: 20px; }
+                                        table { border-collapse: collapse; width: 100%; }
+                                        th, td { padding: 8px; text-align: right; border-bottom: 1px solid #ddd; }
+                                        th { background-color: #f2f2f2; }
+                                    </style>
+                                </head>
+                                <body>
+                                    <div class='container'>
+                                        <h2>התקבלה פנייה חדשה מדף הנחיתה</h2>
+                                        <p>להלן פרטי הפנייה:</p>
+                                        <table>
+                                            <tr>
+                                                <th>שדה</th>
+                                                <th>ערך</th>
+                                            </tr>
+                                            <tr>
+                                                <td>אימייל</td>
+                                                <td>$email</td>
+                                            </tr>";
+                            
+                            // הוספת שדות נוספים אם קיימים
+                            if (!empty($firstName)) {
+                                $message .= "<tr><td>שם</td><td>$firstName</td></tr>";
+                            }
+                            if (!empty($lastName)) {
+                                $message .= "<tr><td>שם משפחה</td><td>$lastName</td></tr>";
+                            }
+                            if (!empty($phone)) {
+                                $message .= "<tr><td>טלפון</td><td>$phone</td></tr>";
+                            }
+                            
+                            // הוספת שדות מותאמים אישית
+                            if (!empty($customFields)) {
+                                foreach ($customFields as $key => $value) {
+                                    if ($key !== '_form_tags') {
+                                        $message .= "<tr><td>$key</td><td>$value</td></tr>";
+                                    }
+                                }
+                            }
+                            
+                            $message .= "
+                                        </table>
+                                        <p>נשלח מדף הנחיתה: <a href='" . APP_URL . "/landing/$slug'>" . $landingPage['title'] . "</a></p>
+                                    </div>
+                                </body>
+                                </html>
+                            ";
+                            
+                            // כותרות המייל
+                            $headers = "MIME-Version: 1.0\r\n";
+                            $headers .= "Content-type: text/html; charset=utf-8\r\n";
+                            $headers .= "From: " . APP_EMAIL . "\r\n";
+                            
+                            // שליחת המייל
+                            mail($emailAddress, $subject, $message, $headers);
+                            error_log('Notification email sent to: ' . $emailAddress);
+                        }
+                    }
+                }
+                
+                // שליחת נתונים לוובהוק אם הוגדר
+                if ($webhookUrl) {
+                    // הכנת נתונים לשליחה
+                    $webhookData = [
+                        'email' => $email,
+                        'first_name' => $firstName,
+                        'last_name' => $lastName,
+                        'phone' => $phone,
+                        'custom_fields' => $customFields,
+                        'landing_page_id' => $landingPage['id'],
+                        'landing_page_title' => $landingPage['title'],
+                        'timestamp' => time()
+                    ];
+                    
+                    // המרה ל-JSON
+                    $jsonData = json_encode($webhookData);
+                    
+                    // יצירת אובייקט cURL
+                    $ch = curl_init($webhookUrl);
+                    
+                    // הגדרת אפשרויות cURL
+                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                        'Content-Type: application/json',
+                        'Content-Length: ' . strlen($jsonData)
+                    ]);
+                    
+                    // ביצוע הבקשה
+                    $response = curl_exec($ch);
+                    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    
+                    // רישום לוג
+                    error_log('Webhook response code: ' . $httpCode);
+                    error_log('Webhook response: ' . $response);
+                    
+                    // סגירת אובייקט cURL
+                    curl_close($ch);
+                }
+                
                 // בבקשת AJAX, החזר רק את הודעת ההצלחה
                 if ($isAjaxSubmit) {
+                    // בדוק אם יש הודעת תודה מותאמת אישית
+                    $successMsg = 'תודה! פרטיך התקבלו בהצלחה.';
+                    
+                    if ($thankYouMessage) {
+                        $successMsg = htmlspecialchars($thankYouMessage);
+                    }
+                    
                     echo '<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-                            <span class="block sm:inline">תודה! פרטיך התקבלו בהצלחה.</span>
+                            <span class="block sm:inline">' . $successMsg . '</span>
                           </div>';
                     exit;
                 }
@@ -215,9 +372,18 @@ $pageContent = $landingPage['content'];
 
 // Process the HTML to handle form submission
 if ($showSuccessMessage) {
-    // Replace form with success message or show a notification
+    // בדוק אם יש הודעת תודה מותאמת אישית
+    $successMsg = 'תודה! פרטיך התקבלו בהצלחה.';
+    
+    // חיפוש הודעת תודה מותאמת אישית בדף
+    preg_match('/<form[^>]*data-thank-you-message=["\']([^"\']*)["\'][^>]*>/i', $landingPage['content'], $thankYouMatches);
+    if (isset($thankYouMatches[1]) && !empty($thankYouMatches[1])) {
+        $successMsg = htmlspecialchars($thankYouMatches[1]);
+    }
+    
+    // הכנת הודעת ההצלחה
     $successMessage = '<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-                        <span class="block sm:inline">תודה! פרטיך התקבלו בהצלחה.</span>
+                        <span class="block sm:inline">' . $successMsg . '</span>
                        </div>';
                        
     // Look for form tags or specific elements to replace

@@ -1515,4 +1515,155 @@ function handleFieldDragEnd(e) {
     
     // הסרת מחוון ההשמטה
     removeFieldDropIndicator();
+}
+
+// עדכון הפונקציה saveFormDataAttributes או המקום שבו מוגדרים ה-attributes של הטופס
+function saveFormDataAttributes() {
+    // קבלת ערכים מה-UI
+    const formTags = formTagInput.value.trim();
+    const formListId = formListSelect.value;
+    const redirectUrl = redirectUrlInput.value.trim();
+    const thankYouMessage = document.getElementById('form-thank-you-message')?.value?.trim();
+    const notificationEmails = document.getElementById('form-notification-emails')?.value?.trim();
+    const webhookUrl = document.getElementById('form-webhook-url')?.value?.trim();
+    
+    // עדכון הטופס במסגרת התצוגה המקדימה
+    const previewForm = document.querySelector('#form-preview-iframe').contentDocument.querySelector('form');
+    
+    // בדיקה שיש טופס במסגרת התצוגה המקדימה
+    if (!previewForm) {
+        console.error('No form found in preview iframe');
+        return;
+    }
+    
+    // שמירת תגיות
+    if (formTags) {
+        previewForm.setAttribute('data-tags', formTags);
+    } else {
+        previewForm.removeAttribute('data-tags');
+    }
+    
+    // שמירת מזהה רשימה
+    if (formListId) {
+        previewForm.setAttribute('data-list-id', formListId);
+    } else {
+        previewForm.removeAttribute('data-list-id');
+    }
+    
+    // שמירת כתובת הפניה
+    if (redirectUrl) {
+        previewForm.setAttribute('data-redirect', redirectUrl);
+    } else {
+        previewForm.removeAttribute('data-redirect');
+    }
+    
+    // שמירת הודעת תודה מותאמת אישית
+    if (thankYouMessage) {
+        previewForm.setAttribute('data-thank-you-message', thankYouMessage);
+    } else {
+        previewForm.removeAttribute('data-thank-you-message');
+    }
+    
+    // שמירת כתובות מייל להתראות
+    if (notificationEmails) {
+        previewForm.setAttribute('data-notification-emails', notificationEmails);
+    } else {
+        previewForm.removeAttribute('data-notification-emails');
+    }
+    
+    // שמירת כתובת וובהוק
+    if (webhookUrl) {
+        previewForm.setAttribute('data-webhook-url', webhookUrl);
+    } else {
+        previewForm.removeAttribute('data-webhook-url');
+    }
+    
+    // וידוא שיש מזהה לטופס
+    if (!previewForm.id) {
+        previewForm.id = 'form-' + Date.now();
+    }
+    
+    // וידוא שיש data-form-id
+    if (!previewForm.getAttribute('data-form-id')) {
+        previewForm.setAttribute('data-form-id', previewForm.id);
+    }
+    
+    // עדכון הקוד בתיבת העורך
+    updateEditorWithPreviewContent();
+}
+
+// הוספת פונקציה לטעינת הגדרות הטופס מהתצוגה המקדימה
+function loadFormSettingsFromPreview() {
+    const previewForm = document.querySelector('#form-preview-iframe').contentDocument.querySelector('form');
+    if (!previewForm) return;
+    
+    // טעינת ערכים קיימים לשדות הבסיסיים
+    const formListSelect = document.getElementById('form-list-select');
+    const formTagInput = document.getElementById('form-tag-input');
+    const redirectCheckbox = document.getElementById('redirect-checkbox');
+    const redirectUrlSection = document.getElementById('redirect-url-section');
+    const redirectUrlInput = document.getElementById('redirect-url-input');
+    
+    // טעינת ערכים קיימים לשדות המתקדמים
+    const thankYouMessageCheckbox = document.getElementById('thank-you-message-checkbox');
+    const thankYouMessageSection = document.getElementById('thank-you-message-section');
+    const thankYouMessageInput = document.getElementById('form-thank-you-message');
+    const notificationEmailsInput = document.getElementById('form-notification-emails');
+    const webhookUrlInput = document.getElementById('form-webhook-url');
+    
+    // טעינת התגיות
+    const formTags = previewForm.getAttribute('data-tags');
+    if (formTags) {
+        formTagInput.value = formTags;
+    }
+    
+    // טעינת מזהה רשימה
+    const formList = previewForm.getAttribute('data-list-id');
+    if (formList) {
+        formListSelect.value = formList;
+    }
+    
+    // טעינת הפניה
+    const redirectUrl = previewForm.getAttribute('data-redirect');
+    if (redirectUrl) {
+        redirectCheckbox.checked = true;
+        redirectUrlSection.classList.remove('hidden');
+        redirectUrlInput.value = redirectUrl;
+    }
+    
+    // טעינת הודעת תודה מותאמת אישית
+    const thankYouMessage = previewForm.getAttribute('data-thank-you-message');
+    if (thankYouMessage) {
+        thankYouMessageCheckbox.checked = true;
+        thankYouMessageSection.classList.remove('hidden');
+        thankYouMessageInput.value = thankYouMessage;
+    }
+    
+    // טעינת כתובות מייל להתראות
+    const notificationEmails = previewForm.getAttribute('data-notification-emails');
+    if (notificationEmails) {
+        notificationEmailsInput.value = notificationEmails;
+    }
+    
+    // טעינת כתובת וובהוק
+    const webhookUrl = previewForm.getAttribute('data-webhook-url');
+    if (webhookUrl) {
+        webhookUrlInput.value = webhookUrl;
+    }
+}
+
+// הוספת פונקציה לקבלת ה-attributes של הטופס
+function getFormDataAttributes() {
+    const previewForm = document.querySelector('#form-preview-iframe').contentDocument.querySelector('form');
+    if (!previewForm) return {};
+    
+    return {
+        tags: previewForm.getAttribute('data-tags'),
+        list: previewForm.getAttribute('data-list-id'),
+        redirect: previewForm.getAttribute('data-redirect'),
+        thankYouMessage: previewForm.getAttribute('data-thank-you-message'),
+        notificationEmails: previewForm.getAttribute('data-notification-emails'),
+        webhookUrl: previewForm.getAttribute('data-webhook-url'),
+        formId: previewForm.getAttribute('data-form-id') || previewForm.id || ('form-' + Date.now())
+    };
 } 
