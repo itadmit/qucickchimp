@@ -403,9 +403,13 @@ function uploadMedia(file) {
         alert('שגיאה בהעלאת התמונה: ' + error.message);
     });
 }
+
+
+
 // חשיפת פונקציות לשימוש גלובלי
 window.mediaLibrary = {
-    open: openMediaLibrary
+    open: openMediaLibrary,
+    loadExistingMedia: loadExistingMedia  // הוסף את זה אם חסר
 };
 
 // אתחול ספריית המדיה כאשר המסמך נטען

@@ -206,73 +206,6 @@
 
 
 
-function setupImageControlButtons() {
-    console.log("Setting up image control buttons");
-    // מצא את כל כפתורי החלפת התמונה באזור העריכה
-    const replaceImageButtons = document.querySelectorAll('#section-controls button');
-    
-    replaceImageButtons.forEach(button => {
-        // בדוק אם הכפתור הוא כפתור החלפת תמונה
-        if (button.textContent && button.textContent.includes('החלף תמונה')) {
-            console.log("Found replace image button:", button.textContent);
-            
-            // הסר אירועים קודמים
-            const newButton = button.cloneNode(true);
-            button.parentNode.replaceChild(newButton, button);
-            
-            // הוסף אירוע לחיצה חדש
-            newButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                console.log("Replace image button clicked");
-                
-                if (isMediaLibraryOpening) return;
-                isMediaLibraryOpening = true;
-                
-                // קבלת מזהה דף נחיתה
-                const landingPageId = getLandingPageId();
-                console.log("Replace image using landing page ID:", landingPageId);
-                
-                if (!landingPageId) {
-                    alert('לא נמצא מזהה דף נחיתה');
-                    isMediaLibraryOpening = false;
-                    return;
-                }
-                
-                // מצא את אובייקט התמונה הרלוונטי
-                const imageControlDiv = newButton.closest('div[class*="bg-gray-50"]');
-                if (!imageControlDiv) {
-                    console.error("Could not find image control div");
-                    isMediaLibraryOpening = false;
-                    return;
-                }
-                
-                const previewImg = imageControlDiv.querySelector('img');
-                const urlInput = imageControlDiv.querySelector('input[data-target^="image-src"]');
-                
-                // שימוש ב-window.mediaLibrary.open במקום mediaLibrary.open
-                window.mediaLibrary.open(landingPageId, (newImageUrl) => {
-                    console.log("Image selected:", newImageUrl);
-                    if (newImageUrl) {
-                        // עדכון התמונה בתצוגה
-                        if (previewImg) {
-                            previewImg.src = newImageUrl;
-                        }
-                        
-                        // עדכון שדה ה-URL
-                        if (urlInput) {
-                            urlInput.value = newImageUrl;
-                            
-                            // הפעלת אירוע input כדי לעדכן את התמונה באיפריים
-                            const inputEvent = new Event('input', { bubbles: true });
-                            urlInput.dispatchEvent(inputEvent);
-                        }
-                    }
-                    isMediaLibraryOpening = false;
-                });
-            });
-        }
-    });
-}
         
         // Populate sections list in sidebar
         function initDraggableSections() {
@@ -818,38 +751,7 @@ mediaItems.forEach(item => {
                 });
             }
             
-            // Image controls
-            if (images.length > 0) {
-                images.forEach((image, index) => {
-                    const controlDiv = document.createElement('div');
-                    controlDiv.innerHTML = `
-                        <label class="block text-sm font-medium text-gray-700 mb-1">תמונה ${index + 1}</label>
-                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 mb-2" 
-                               value="${image.getAttribute('src')}" placeholder="קישור לתמונה" data-target="image-src-${index}">
-                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500" 
-                               value="${image.getAttribute('alt') || ''}" placeholder="טקסט חלופי" data-target="image-alt-${index}">
-                    `;
-                    
-                    controlsContainer.appendChild(controlDiv);
-                    
-                    const srcInput = controlDiv.querySelector('input[data-target^="image-src"]');
-                    const altInput = controlDiv.querySelector('input[data-target^="image-alt"]');
-                    
-                    srcInput.addEventListener('input', () => {
-                        image.setAttribute('src', srcInput.value);
-                        
-                        // Update current content
-                        currentContent = iframeDoc.documentElement.outerHTML;
-                    });
-                    
-                    altInput.addEventListener('input', () => {
-                        image.setAttribute('alt', altInput.value);
-                        
-                        // Update current content
-                        currentContent = iframeDoc.documentElement.outerHTML;
-                    });
-                });
-            }
+
             
             // Background color control
             const controlDiv = document.createElement('div');
@@ -931,80 +833,72 @@ mediaItems.forEach(item => {
                     imageControlDiv.appendChild(altInputGroup);
                     
                    // כפתור החלפת תמונה
-                const uploadButton = document.createElement('button');
-                uploadButton.className = 'w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-3 rounded text-sm flex items-center justify-center';
-                uploadButton.innerHTML = '<i class="ri-image-add-line ml-1"></i> החלף תמונה';
-                uploadButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    
-                    // מניעת פתיחות מרובות מהירות
-                    if (isMediaLibraryOpening) return;
-                    isMediaLibraryOpening = true;
-                    
-                    // קבלת מזהה דף נחיתה
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const landingPageId = urlParams.get('id');
-                    
-                    if (!landingPageId) {
-                        alert('לא נמצא מזהה דף נחיתה');
-                        isMediaLibraryOpening = false;
-                        return;
-                    }
-                    
-                    // פתיחת ספריית המדיה
-                    const mediaModal = document.getElementById('media-library-modal');
-                    if (mediaModal) {
-                        mediaModal.classList.remove('hidden');
-                        
-                        // שמירת פונקציית callback לעדכון התמונה לאחר בחירה
-                        window._currentImageCallback = (newImageUrl) => {
-                            if (newImageUrl) {
-                                // עדכון התמונה
-                                image.src = newImageUrl;
-                                
-                                // עדכון התצוגה המקדימה
-                                const previewImg = imagePreview.querySelector('img');
-                                if (previewImg) previewImg.src = newImageUrl;
-                                
-                                // עדכון שדה URL
-                                const urlInput = urlInputGroup.querySelector('input');
-                                if (urlInput) urlInput.value = newImageUrl;
-                                
-                                // עדכון התוכן הכללי
-                                currentContent = iframeDoc.documentElement.outerHTML;
-                            }
-                            
-                            // סגירת המודל
-                            mediaModal.classList.add('hidden');
-                            isMediaLibraryOpening = false;
-                        };
-                        
-                        // הוספת אירועי לחיצה לתמונות במודל המדיה
-                        setTimeout(() => {
-                            const mediaItems = document.querySelectorAll('#media-grid .media-item');
-                            mediaItems.forEach(item => {
-                                // הסרת אירועים קודמים
-                                const newItem = item.cloneNode(true);
-                                if (item.parentNode) {
-                                    item.parentNode.replaceChild(newItem, item);
-                                }
-                                
-                                // הוספת אירוע חדש
-                                newItem.addEventListener('click', () => {
-                                    const imageUrl = newItem.getAttribute('data-url');
-                                    if (imageUrl && window._currentImageCallback) {
-                                        window._currentImageCallback(imageUrl);
-                                    }
-                                });
-                            });
-                        }, 300);
-                    } else {
-                        console.error("Media library modal not found");
-                        alert("אירעה שגיאה: מודל ספריית המדיה לא נמצא");
-                        isMediaLibraryOpening = false;
-                    }
-                });
-                imageControlDiv.appendChild(uploadButton);
+// כפתור החלפת תמונה
+const uploadButton = document.createElement('button');
+uploadButton.className = 'w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-3 rounded text-sm flex items-center justify-center';
+uploadButton.innerHTML = '<i class="ri-image-add-line ml-1"></i> החלף תמונה';
+uploadButton.addEventListener('click', (e) => {
+    // קוד קיים לטיפול בלחיצה
+});
+imageControlDiv.appendChild(uploadButton);
+// מאזין אירועים פשוט יותר
+uploadButton.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log("Change image button clicked");
+    
+    // מניעת פתיחות כפולות
+    if (window.isMediaLibraryOpening) return;
+    window.isMediaLibraryOpening = true;
+    
+    // קבלת מזהה דף הנחיתה
+    const urlParams = new URLSearchParams(window.location.search);
+    const landingPageId = urlParams.get('id');
+    
+    if (!landingPageId) {
+        alert('לא נמצא מזהה דף נחיתה');
+        window.isMediaLibraryOpening = false;
+        return;
+    }
+    
+    // פתיחת ספריית המדיה בשיטה הפשוטה ביותר
+    window.mediaLibrary.open(landingPageId, function(newImageUrl) {
+        console.log("Selected image:", newImageUrl);
+        
+        if (newImageUrl) {
+            // עדכון התמונה המקורית
+            image.src = newImageUrl;
+            
+            // עדכון התצוגה המקדימה
+            const previewImg = imagePreview.querySelector('img');
+            if (previewImg) {
+                previewImg.src = newImageUrl;
+            }
+            
+            // עדכון שדה ה-URL
+            const urlInput = urlInputGroup.querySelector('input');
+            if (urlInput) {
+                urlInput.value = newImageUrl;
+                
+                // הפעלת אירוע input כדי לעדכן את התמונה באיפריים
+                const inputEvent = new Event('input', { bubbles: true });
+                urlInput.dispatchEvent(inputEvent);
+            }
+            
+            // עדכון התוכן הכללי
+            const iframe = document.getElementById('preview-iframe');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            currentContent = iframeDoc.documentElement.outerHTML;
+        }
+        
+        // איפוס דגל פתיחת המודל
+        window.isMediaLibraryOpening = false;
+    });
+});
+
+imageControlDiv.appendChild(uploadButton);
+
 
                     // הוספת מאזינים לשינויים בשדות
                     const urlInput = urlInputGroup.querySelector('input');
@@ -1529,7 +1423,11 @@ mediaItems.forEach(item => {
     }, 100);
 }
 
-        
+function setupImageControlButtons() {
+    console.log("Empty setup function called");
+    // אין צורך לעשות כלום, הפונקציה המקורית תישאר ריקה
+    // כי אנחנו נטפל באירועי הלחיצה ישירות בתוך selectSection
+}
         // Close HTML editor
         function closeHtmlEditor() {
             document.getElementById('html-editor-modal').classList.add('hidden');
