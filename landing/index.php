@@ -68,6 +68,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 error_log('Found data-tags in the form HTML: ' . $formTags);
             }
             
+            // Extract list ID if form is connected to a contact list
+            $listId = null;
+            preg_match('/<form[^>]*data-list-id=["\']([^"\']*)["\'][^>]*>/i', $landingPage['content'], $listMatches);
+            if (isset($listMatches[1]) && !empty($listMatches[1])) {
+                $listId = $listMatches[1];
+                error_log('Found data-list-id in the form HTML: ' . $listId);
+            }
+            
             // Extract custom fields from POST data
             $customFields = [];
             foreach ($_POST as $key => $value) {
@@ -137,6 +145,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             if ($result) {
+                // Add subscriber to list if list ID was found in the form
+                if ($listId) {
+                    // Get the subscriber's ID
+                    $subscriberId = $existingSubscriber ? $existingSubscriber['id'] : $pdo->lastInsertId();
+                    
+                    // Check if subscriber is already in the list
+                    $stmt = $pdo->prepare("SELECT id FROM list_subscribers WHERE list_id = ? AND subscriber_id = ?");
+                    $stmt->execute([$listId, $subscriberId]);
+                    $existingListSubscriber = $stmt->fetch();
+                    
+                    if (!$existingListSubscriber) {
+                        // Add subscriber to list
+                        $stmt = $pdo->prepare("
+                            INSERT INTO list_subscribers 
+                            (list_id, subscriber_id, added_at) 
+                            VALUES (?, ?, NOW())
+                        ");
+                        $stmt->execute([$listId, $subscriberId]);
+                        error_log('Added subscriber ' . $subscriberId . ' to list ' . $listId);
+                    } else {
+                        error_log('Subscriber ' . $subscriberId . ' already in list ' . $listId);
+                    }
+                }
+                
                 // Successful submission - redirect to thank you page or the same page with a success parameter
                 if (!empty($landingPage['redirect_url'])) {
                     redirect($landingPage['redirect_url']);

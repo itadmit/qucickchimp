@@ -952,9 +952,20 @@ mediaItems.forEach(item => {
                                             <label class="block text-sm font-medium text-gray-700 mb-1">שייך לרשימת תפוצה</label>
                                             <select id="modal-form-list-select" class="block w-full py-1.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
                                                 <option value="">לא משויך (ברירת מחדל)</option>
-                                                <option value="list-1">רשימה ראשית</option>
-                                                <option value="list-2">מתעניינים</option>
-                                                <option value="list-3">לקוחות</option>
+                                                <?php
+                                                // קבלת משתמש נוכחי
+                                                $userId = $_SESSION['user_id'] ?? 0;
+                                                
+                                                // שליפת רשימות התפוצה של המשתמש
+                                                $contactListsQuery = $pdo->prepare("SELECT id, name FROM contact_lists WHERE user_id = ? ORDER BY name");
+                                                $contactListsQuery->execute([$userId]);
+                                                $contactLists = $contactListsQuery->fetchAll();
+                                                
+                                                // הצגת הרשימות בתפריט הבחירה
+                                                foreach($contactLists as $list) {
+                                                    echo '<option value="' . $list['id'] . '">' . htmlspecialchars($list['name']) . '</option>';
+                                                }
+                                                ?>
                                             </select>
                                         </div>
                                         
@@ -1314,7 +1325,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabletViewBtn = document.getElementById('tablet-view-btn');
     const mobileViewBtn = document.getElementById('mobile-view-btn');
     
-    // הגדרת מסגרת התצוגה המקדימה
+    // הגדרת מסגרת התצוגות המקדימה
     const previewContainer = document.querySelector('.preview-container'); // שים לב לשינוי כאן
     const previewIframe = document.getElementById('preview-iframe');
     
@@ -1516,6 +1527,18 @@ document.addEventListener('DOMContentLoaded', () => {
     modals.forEach(modalId => {
         setupModalOverlayClose(modalId);
     });
+    
+    // חיבור כפתור שמירה לפונקציית שמירה
+    const saveButton = document.getElementById('save-button');
+    if (saveButton) {
+        saveButton.addEventListener('click', function() {
+            // שמירת התוכן
+            saveContent();
+        });
+        console.log('Save button initialized');
+    } else {
+        console.error('Save button not found');
+    }
 });
 
 

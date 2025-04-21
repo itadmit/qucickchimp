@@ -25,6 +25,10 @@ let formIframeDoc = null;
 // משתנה לשמירת מצביע למחוון נוכחי
 let currentDropIndicator = null;
 
+// מונה גלובלי למספר הניסיונות למצוא את מיכל השדות
+let loadFieldsAttempts = 0;
+const MAX_LOAD_ATTEMPTS = 3; // מספר מקסימלי של ניסיונות
+
 // יצירת מחוון ההשמטה
 function createFieldDropIndicator() {
     const indicator = document.createElement('div');
@@ -39,14 +43,26 @@ function createFieldDropIndicator() {
  * @param {Document} iframeDoc - The iframe document
  */
 function initFormEditor(section, iframeDoc) {
+    console.log('Initializing form editor with section:', section);
+    
     // Store references
     formIframeDoc = iframeDoc;
+    
+    // בדיקה שהסקשן קיים
+    if (!section) {
+        console.error('Section not provided to form editor');
+        return;
+    }
+    
+    // מציאת הטופס בתוך הסקשן
     currentForm = section.querySelector('form');
     
     if (!currentForm) {
         console.error('No form found in the section');
         return;
     }
+    
+    console.log('Found form in section:', currentForm);
     
     // Load existing form fields
     loadExistingFormFields();
@@ -59,28 +75,72 @@ function initFormEditor(section, iframeDoc) {
     
     // Setup redirect checkbox
     setupRedirectCheckbox();
+    
+    console.log('Form editor initialized successfully');
 }
 
 /**
  * Load existing form fields into the UI
  */
 async function loadExistingFormFields() {
-    // וודא שהמודאל נפתח ומוכן לפני חיפוש האלמנטים
+    // מעקב אחרי מספר הניסיונות
+    loadFieldsAttempts++;
+    
+    if (loadFieldsAttempts > MAX_LOAD_ATTEMPTS) {
+        console.error(`נכשל לטעון את שדות הטופס אחרי ${MAX_LOAD_ATTEMPTS} ניסיונות. עוצר.`);
+        loadFieldsAttempts = 0; // איפוס המונה לניסיון הבא
+        return;
+    }
+    
+    // הגדל את זמן ההמתנה כדי לוודא שהמודאל נפתח ומוכן
     setTimeout(() => {
+        console.log(`Attempting to load form fields... (attempt ${loadFieldsAttempts}/${MAX_LOAD_ATTEMPTS})`);
+        
         // שינוי מזהה האלמנט שמחפשים - יש להשתמש ב-modal-form-fields-container
         const formFieldsContainer = document.getElementById('modal-form-fields-container');
         if (!formFieldsContainer) {
             console.error('Form fields container not found.');
+            // ננסה שוב אחרי עוד זמן המתנה, אבל רק אם לא הגענו למספר המקסימלי של ניסיונות
+            if (loadFieldsAttempts < MAX_LOAD_ATTEMPTS) {
+                setTimeout(() => loadExistingFormFields(), 300);
+            } else {
+                console.error('הגענו למספר המקסימלי של ניסיונות. עוצר את הטעינה.');
+                loadFieldsAttempts = 0; // איפוס המונה לניסיון הבא
+            }
             return;
         }
+        
+        // איפוס מונה הניסיונות כי מצאנו את המיכל
+        loadFieldsAttempts = 0;
     
-        const existingFields = extractExistingFormFields();
-        if (existingFields.length === 0) {
+        // חילוץ שדות מהטופס
+        extractExistingFormFields();
+        
+        if (!currentFormFields || currentFormFields.length === 0) {
             console.log('No existing fields found.');
+            
+            // עדכון ההצגה גם כשאין שדות
+            const formFieldsSection = document.getElementById('modal-form-fields-section');
+            const noFieldsMessage = document.getElementById('modal-no-fields-message');
+            
+            if (formFieldsSection) {
+                formFieldsSection.classList.add('hidden');
+            }
+            
+            if (noFieldsMessage) {
+                noFieldsMessage.classList.remove('hidden');
+            }
+            
+            // עדכון מספר השדות
+            const fieldsCountElement = document.getElementById('modal-fields-count');
+            if (fieldsCountElement) {
+                fieldsCountElement.textContent = "0";
+            }
+            
             return;
         }
     
-        console.log('Loading existing fields:', existingFields);
+        console.log('Loading existing fields:', currentFormFields);
     
         // Clear existing fields
         formFieldsContainer.innerHTML = '';
@@ -103,7 +163,7 @@ async function loadExistingFormFields() {
         document.addEventListener('dragend', handleFieldDragEnd);
         
         // הצגת השדות הקיימים
-        existingFields.forEach((field, index) => {
+        currentFormFields.forEach((field, index) => {
             const fieldElement = createFieldUI(field, index);
             formFieldsContainer.appendChild(fieldElement);
             
@@ -137,7 +197,7 @@ async function loadExistingFormFields() {
             fieldsCountElement.textContent = currentFormFields.length;
         }
         
-    }, 100); // תן למודאל זמן להיטען לפני חיפוש האלמנטים
+    }, 500); // הגדלת זמן ההמתנה ל-500ms כדי לתת למודאל להיטען
 }
 
 /**
@@ -145,17 +205,25 @@ async function loadExistingFormFields() {
  */
 function extractExistingFormFields() {
     // וודא שיש טופס
-    if (!currentForm) return;
+    if (!currentForm) {
+        console.error('No form found when extracting fields');
+        currentFormFields = [];
+        return currentFormFields;
+    }
+    
+    console.log('Extracting fields from form:', currentForm);
     
     // איפוס המערך של השדות
     currentFormFields = [];
     
     // קבל את כל הילדים של הטופס
     const formChildren = Array.from(currentForm.children);
+    console.log('Form children count:', formChildren.length);
     
     formChildren.forEach((container, index) => {
         // בדיקה האם זה מיכל של שדה (בד"כ div עם mb-4)
         if (container.tagName.toLowerCase() !== 'div' || !container.querySelector('input, textarea, select')) {
+            console.log('Skipping non-field container:', container);
             return; // דלג על אלמנטים שאינם שדות
         }
         
@@ -163,7 +231,8 @@ function extractExistingFormFields() {
         const element = container.querySelector('input, textarea, select');
         
         // דלג על כפתורי שליחה או שדות מוסתרים שאינם שדות מותאמים
-        if (element.type === 'submit' || (element.type === 'hidden' && element.name !== 'custom_field')) {
+        if (!element || element.type === 'submit' || (element.type === 'hidden' && element.name !== 'custom_field')) {
+            console.log('Skipping non-supported field element:', element);
             return;
         }
         
@@ -179,7 +248,7 @@ function extractExistingFormFields() {
         let labelText = '';
         const label = container.querySelector('label');
         if (label) {
-            labelText = label.textContent;
+            labelText = label.textContent.trim();
             // הסר כוכבית של שדה חובה אם קיימת
             labelText = labelText.replace(/\s*\*\s*$/, '');
         }
@@ -222,6 +291,7 @@ function extractExistingFormFields() {
         
         // הוסף את השדה למערך
         currentFormFields.push(field);
+        console.log('Added field:', field);
     });
     
     console.log('Extracted', currentFormFields.length, 'fields from form');
@@ -748,7 +818,7 @@ function updateFormInIframe() {
     // שמור את המאפיינים (data attributes) של הטופס לפני ניקוי
     const formDataAttributes = {
         tags: previewForm.getAttribute('data-tags'),
-        list: previewForm.getAttribute('data-list'),
+        list: previewForm.getAttribute('data-list-id'),
         redirect: previewForm.getAttribute('data-redirect')
     };
     
@@ -769,7 +839,7 @@ function updateFormInIframe() {
         previewForm.setAttribute('data-tags', formDataAttributes.tags);
     }
     if (formDataAttributes.list) {
-        previewForm.setAttribute('data-list', formDataAttributes.list);
+        previewForm.setAttribute('data-list-id', formDataAttributes.list);
     }
     if (formDataAttributes.redirect) {
         previewForm.setAttribute('data-redirect', formDataAttributes.redirect);
@@ -909,8 +979,12 @@ function updateFormInIframe() {
         previewForm.appendChild(submitContainer);
     }
     
-    // עדכן את לוגיקת התצוגה של השדות במודל עורך הטפסים
-    loadExistingFormFields();
+    // עדכן את התוכן בחלון האב
+    if (formIframeDoc) {
+        window.parent.currentContent = formIframeDoc.documentElement.outerHTML;
+    }
+    
+    console.log('Form updated in iframe successfully');
 }
 
 /**
@@ -988,7 +1062,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     console.log('Form attributes updated before save:', {
                         tags: currentForm.getAttribute('data-tags'),
-                        list: currentForm.getAttribute('data-list'),
+                        list: currentForm.getAttribute('data-list-id'),
                         redirect: currentForm.getAttribute('data-redirect')
                     });
                 }
