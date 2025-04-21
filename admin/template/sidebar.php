@@ -68,6 +68,13 @@
             </li>
             
             <li>
+                <a href="automations.php" class="sidebar-link flex items-center px-4 py-3 text-gray-700 <?php echo $currentPage == 'automations.php' || $currentPage == 'automation_create.php' || $currentPage == 'automation_edit.php' ? 'active' : ''; ?>">
+                    <i class="ri-loop-right-line ml-3 text-xl"></i>
+                    <span>אוטומציות</span>
+                </a>
+            </li>
+            
+            <li>
                 <a href="campaigns.php" class="sidebar-link flex items-center px-4 py-3 text-gray-700 <?php echo $currentPage == 'campaigns.php' ? 'active' : ''; ?>">
                     <i class="ri-mail-send-line ml-3 text-xl"></i>
                     <span>קמפיינים</span>
