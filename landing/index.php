@@ -50,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $firstName = sanitize($_POST['name'] ?? '');
     $lastName = sanitize($_POST['lastname'] ?? '');
     $phone = sanitize($_POST['phone'] ?? '');
+    $isAjaxSubmit = isset($_POST['ajax_submit']);
     
     // Validate email (minimum requirement)
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -151,15 +152,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $subscriberId = $existingSubscriber ? $existingSubscriber['id'] : $pdo->lastInsertId();
                     
                     // Check if subscriber is already in the list
-                    $stmt = $pdo->prepare("SELECT id FROM list_subscribers WHERE list_id = ? AND subscriber_id = ?");
+                    $stmt = $pdo->prepare("SELECT id FROM subscriber_lists WHERE list_id = ? AND subscriber_id = ?");
                     $stmt->execute([$listId, $subscriberId]);
                     $existingListSubscriber = $stmt->fetch();
                     
                     if (!$existingListSubscriber) {
                         // Add subscriber to list
                         $stmt = $pdo->prepare("
-                            INSERT INTO list_subscribers 
-                            (list_id, subscriber_id, added_at) 
+                            INSERT INTO subscriber_lists 
+                            (list_id, subscriber_id, created_at) 
                             VALUES (?, ?, NOW())
                         ");
                         $stmt->execute([$listId, $subscriberId]);
@@ -167,6 +168,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     } else {
                         error_log('Subscriber ' . $subscriberId . ' already in list ' . $listId);
                     }
+                }
+                
+                // בבקשת AJAX, החזר רק את הודעת ההצלחה
+                if ($isAjaxSubmit) {
+                    echo '<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+                            <span class="block sm:inline">תודה! פרטיך התקבלו בהצלחה.</span>
+                          </div>';
+                    exit;
                 }
                 
                 // Successful submission - redirect to thank you page or the same page with a success parameter
@@ -177,8 +186,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             } else {
                 $formError = 'אירעה שגיאה בעת שליחת הטופס. אנא נסה שנית.';
+                
+                // בבקשת AJAX, החזר רק את הודעת השגיאה
+                if ($isAjaxSubmit) {
+                    echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                            <span class="block sm:inline">' . $formError . '</span>
+                          </div>';
+                    exit;
+                }
             }
         }
+    }
+    
+    // בבקשת AJAX, החזר הודעת שגיאה אם יש
+    if ($isAjaxSubmit && isset($formError)) {
+        echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                <span class="block sm:inline">' . $formError . '</span>
+              </div>';
+        exit;
     }
 }
 
@@ -242,3 +267,123 @@ if (!$formWithMethodRegex) {
 
 // Output the processed content
 echo $pageContent;
+
+// הוספת קוד JavaScript עבור שליחת טפסים באמצעות AJAX
+echo <<<EOT
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // איתור כל הטפסים בדף
+    const forms = document.querySelectorAll('form');
+    
+    forms.forEach(form => {
+        // בדיקה שלא מדובר בטופס עם תכונה מיוחדת שמונעת AJAX
+        if (!form.hasAttribute('data-no-ajax')) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // עצירת שליחת הטופס בדרך הרגילה
+                
+                // יצירת אובייקט FormData מהטופס
+                const formData = new FormData(form);
+                
+                // הוספת סמן AJAX לבקשה
+                formData.append('ajax_submit', '1');
+                
+                // הצגת אנימציית טעינה
+                let loadingDiv = document.createElement('div');
+                loadingDiv.className = 'ajax-loading';
+                loadingDiv.innerHTML = '<div class="spinner"></div><p>שולח...</p>';
+                loadingDiv.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.8);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;';
+                form.style.position = 'relative';
+                form.appendChild(loadingDiv);
+                
+                // שליחת הטופס באמצעות AJAX
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(html => {
+                    // חיפוש הודעת ההצלחה בתשובה
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const successMessage = doc.querySelector('.bg-green-100');
+                    
+                    if (successMessage) {
+                        // יצירת מיכל להודעת ההצלחה
+                        const successContainer = document.createElement('div');
+                        successContainer.className = 'success-message';
+                        successContainer.innerHTML = successMessage.outerHTML;
+                        
+                        // החלפת הטופס בהודעת ההצלחה
+                        form.innerHTML = '';
+                        form.appendChild(successContainer);
+                        
+                        // גלילה חלקה אל הטופס כדי שהמשתמש יראה את ההודעה
+                        form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // הצגת אנימציה קלה להדגשת ההודעה
+                        successContainer.style.animation = 'fadeIn 0.5s ease-in-out';
+                    } else {
+                        // בדיקה אם יש הודעת שגיאה
+                        const errorMessage = doc.querySelector('.bg-red-100');
+                        if (errorMessage) {
+                            // אם כבר יש הודעת שגיאה בטופס, הסר אותה
+                            const existingError = form.querySelector('.bg-red-100');
+                            if (existingError) {
+                                existingError.remove();
+                            }
+                            
+                            // הוספת הודעת השגיאה בראש הטופס
+                            form.insertBefore(errorMessage, form.firstChild);
+                            
+                            // גלילה חלקה אל הודעת השגיאה
+                            errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        } else {
+                            // אם אין הודעת שגיאה, הנח שהייתה בעיה בשרת
+                            const errorDiv = document.createElement('div');
+                            errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4';
+                            errorDiv.innerHTML = '<span class="block sm:inline">אירעה שגיאה בעת שליחת הטופס. אנא נסה שנית.</span>';
+                            form.insertBefore(errorDiv, form.firstChild);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4';
+                    errorDiv.innerHTML = '<span class="block sm:inline">אירעה שגיאה בעת שליחת הטופס. אנא נסה שנית.</span>';
+                    form.insertBefore(errorDiv, form.firstChild);
+                })
+                .finally(() => {
+                    // הסרת אנימציית הטעינה
+                    if (loadingDiv && loadingDiv.parentNode) {
+                        loadingDiv.parentNode.removeChild(loadingDiv);
+                    }
+                });
+            });
+        }
+    });
+    
+    // הוספת סגנונות CSS לאנימציה
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(99, 102, 241, 0.2);
+            border-radius: 50%;
+            border-top-color: #6366f1;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    `;
+    document.head.appendChild(style);
+});
+</script>
+EOT;
