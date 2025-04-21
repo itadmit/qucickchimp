@@ -10,8 +10,17 @@
  * @return void
  */
 function redirect($location) {
-    header("Location: $location");
-    exit;
+    // בדיקה אם כבר נשלחו headers
+    if (headers_sent()) {
+        // אם Headers כבר נשלחו, נשתמש בפתרון JavaScript
+        echo "<script>window.location.href = '$location';</script>";
+        echo "<noscript><meta http-equiv='refresh' content='0;url=$location'></noscript>";
+        exit;
+    } else {
+        // אם לא נשלחו headers, נשתמש בשיטה הרגילה
+        header("Location: $location");
+        exit;
+    }
 }
 
 /**

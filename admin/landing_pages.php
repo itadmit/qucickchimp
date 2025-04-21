@@ -160,8 +160,28 @@ try {
                 <?php if (!empty($page['thumbnail'])): ?>
                 <img src="<?php echo htmlspecialchars($page['thumbnail']); ?>" alt="<?php echo htmlspecialchars($page['title']); ?>" class="w-full h-40 object-cover">
                 <?php else: ?>
-                <div class="w-full h-40 bg-gray-200 flex items-center justify-center">
-                    <i class="ri-layout-4-line text-4xl text-gray-400"></i>
+                <div class="w-full h-40 bg-gray-50 overflow-hidden relative">
+                    <!-- מסגרת דמוי-מחשב מפושטת -->
+                    <div class="absolute top-0 left-0 right-0 h-4 bg-gray-800 flex items-center px-1">
+                        <div class="flex space-x-1 rtl:space-x-reverse">
+                            <div class="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                            <div class="w-1.5 h-1.5 rounded-full bg-yellow-400"></div>
+                            <div class="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- קונטיינר אייפרם -->
+                    <div class="absolute top-4 left-0 right-0 bottom-0 overflow-hidden bg-white">
+                        <div class="transform scale-[0.12] origin-top-left w-[800%] h-[600px]">
+                            <iframe src="<?php echo APP_URL; ?>/landing/<?php echo htmlspecialchars($page['slug']); ?>" 
+                                class="w-full h-full border-0" 
+                                style="pointer-events:none;" 
+                                scrolling="no" 
+                                loading="lazy"
+                                title="תצוגה מקדימה של <?php echo htmlspecialchars($page['title']); ?>">
+                            </iframe>
+                        </div>
+                    </div>
                 </div>
                 <?php endif; ?>
                 
@@ -174,7 +194,7 @@ try {
                     </span>
                     <?php else: ?>
                     <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                        <i class="ri-close-circle-line ml-1"></i>
+                        <i class="ri-error-warning-line ml-1"></i>
                         לא פעיל
                     </span>
                     <?php endif; ?>
@@ -202,34 +222,37 @@ try {
                     ?>
                 </p>
                 
-                <div class="flex items-center text-xs text-gray-500 mb-4">
-                    <div class="flex items-center ml-3">
-                        <i class="ri-link ml-1"></i>
-                        <span class="truncate" dir="ltr">/landing/<?php echo htmlspecialchars($page['slug']); ?></span>
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center">
+                        <i class="ri-link ml-1 text-gray-400"></i>
+                        <a href="<?php echo APP_URL; ?>/landing/<?php echo htmlspecialchars($page['slug']); ?>" target="_blank" 
+                           class="text-xs text-gray-500 hover:text-indigo-600 hover:underline truncate" dir="ltr">
+                            /<?php echo htmlspecialchars($page['slug']); ?>
+                        </a>
                     </div>
                     <div class="flex items-center">
-                        <i class="ri-calendar-line ml-1"></i>
-                        <?php echo date('d/m/Y', strtotime($page['created_at'])); ?>
+                        <span class="text-xs text-gray-500"><?php echo date('d/m/Y', strtotime($page['created_at'])); ?></span>
+                        <i class="ri-calendar-line mr-1 text-gray-400"></i>
                     </div>
                 </div>
                 
                 <div class="flex justify-between items-center pt-3 border-t">
-                    <div class="flex">
-                        <a href="landing_page_edit.php?id=<?php echo $page['id']; ?>" class="text-gray-600 hover:text-gray-900 text-sm ml-2" title="ערוך פרטים">
-                            <i class="ri-edit-line"></i>
+                    <div class="flex items-center space-x-reverse space-x-2">
+                        <a href="landing_page_edit.php?id=<?php echo $page['id']; ?>" class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center hover:bg-indigo-200 transition-colors" title="ערוך פרטים">
+                            <i class="ri-pencil-line text-indigo-600"></i>
                         </a>
-                        <a href="../customizer/index.php?id=<?php echo $page['id']; ?>" class="text-indigo-600 hover:text-indigo-900 text-sm ml-2" title="ערוך עיצוב">
-                            <i class="ri-paint-brush-line"></i>
+                        <a href="../customizer/index.php?id=<?php echo $page['id']; ?>" class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center hover:bg-purple-200 transition-colors" title="ערוך עיצוב">
+                            <i class="ri-palette-line text-purple-600"></i>
                         </a>
-                        <a href="<?php echo APP_URL; ?>/landing/<?php echo htmlspecialchars($page['slug']); ?>" target="_blank" class="text-blue-600 hover:text-blue-900 text-sm ml-2" title="צפה בדף">
-                            <i class="ri-eye-line"></i>
+                        <a href="<?php echo APP_URL; ?>/landing/<?php echo htmlspecialchars($page['slug']); ?>" target="_blank" class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center hover:bg-blue-200 transition-colors" title="צפה בדף">
+                            <i class="ri-external-link-line text-blue-600"></i>
                         </a>
-                        <a href="landing_pages.php?toggle_active=<?php echo $page['id']; ?>" class="<?php echo $page['is_active'] ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900'; ?> text-sm ml-2" title="<?php echo $page['is_active'] ? 'השבת' : 'הפעל'; ?>">
-                            <i class="<?php echo $page['is_active'] ? 'ri-toggle-fill' : 'ri-toggle-line'; ?>"></i>
+                        <a href="landing_pages.php?toggle_active=<?php echo $page['id']; ?>" class="w-8 h-8 rounded-full <?php echo $page['is_active'] ? 'bg-green-100 hover:bg-green-200' : 'bg-gray-100 hover:bg-gray-200'; ?> flex items-center justify-center transition-colors" title="<?php echo $page['is_active'] ? 'השבת' : 'הפעל'; ?>">
+                            <i class="<?php echo $page['is_active'] ? 'ri-toggle-fill text-green-600' : 'ri-toggle-line text-gray-500'; ?>"></i>
                         </a>
                     </div>
-                    <a href="landing_pages.php?delete=<?php echo $page['id']; ?>" class="text-red-600 hover:text-red-900 text-sm" title="מחק" data-confirm="האם אתה בטוח שברצונך למחוק דף נחיתה זה?">
-                        <i class="ri-delete-bin-line"></i>
+                    <a href="landing_pages.php?delete=<?php echo $page['id']; ?>" class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center hover:bg-red-200 transition-colors" title="מחק" data-confirm="האם אתה בטוח שברצונך למחוק דף נחיתה זה?">
+                        <i class="ri-delete-bin-line text-red-600"></i>
                     </a>
                 </div>
             </div>
@@ -241,7 +264,7 @@ try {
         <div class="border border-dashed rounded-lg overflow-hidden flex items-center justify-center h-64">
             <a href="landing_page_create.php" class="text-center p-5 hover:bg-gray-50 rounded-lg transition-colors">
                 <div class="inline-flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mb-3">
-                    <i class="ri-add-line text-purple-600 text-2xl"></i>
+                    <i class="ri-file-add-line text-purple-600 text-2xl"></i>
                 </div>
                 <h3 class="font-medium text-gray-900 mb-1">צור דף נחיתה חדש</h3>
                 <p class="text-gray-500 text-sm">התחל לאסוף לידים חדשים</p>
@@ -268,7 +291,7 @@ try {
                 <img src="<?php echo htmlspecialchars($template['thumbnail']); ?>" alt="<?php echo htmlspecialchars($template['name']); ?>" class="w-full h-40 object-cover">
                 <?php else: ?>
                 <div class="w-full h-40 bg-gray-200 flex items-center justify-center">
-                    <i class="ri-layout-4-line text-4xl text-gray-400"></i>
+                    <i class="ri-file-list-3-line text-4xl text-gray-400"></i>
                 </div>
                 <?php endif; ?>
             </div>
@@ -293,30 +316,30 @@ try {
     <div class="flex">
         <div class="mr-4">
             <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                <i class="ri-lightbulb-line text-blue-600 text-2xl"></i>
+                <i class="ri-information-line text-blue-600 text-2xl"></i>
             </div>
         </div>
         <div>
             <h3 class="text-lg font-medium text-blue-800 mb-2">טיפים ליצירת דפי נחיתה אפקטיביים</h3>
             <ul class="text-blue-700 space-y-2">
                 <li class="flex items-start">
-                    <i class="ri-check-line ml-2 mt-1"></i>
+                    <i class="ri-checkbox-circle-line ml-2 mt-1"></i>
                     <span>השתמש בכותרת ברורה שמעבירה את ההצעה העיקרית שלך</span>
                 </li>
                 <li class="flex items-start">
-                    <i class="ri-check-line ml-2 mt-1"></i>
+                    <i class="ri-checkbox-circle-line ml-2 mt-1"></i>
                     <span>הוסף תמונות ואלמנטים חזותיים שתומכים במסר שלך</span>
                 </li>
                 <li class="flex items-start">
-                    <i class="ri-check-line ml-2 mt-1"></i>
+                    <i class="ri-checkbox-circle-line ml-2 mt-1"></i>
                     <span>השתמש בטפסים קצרים עם מינימום שדות נדרשים</span>
                 </li>
                 <li class="flex items-start">
-                    <i class="ri-check-line ml-2 mt-1"></i>
+                    <i class="ri-checkbox-circle-line ml-2 mt-1"></i>
                     <span>הוסף חברתיות והמלצות כדי לבנות אמון</span>
                 </li>
                 <li class="flex items-start">
-                    <i class="ri-check-line ml-2 mt-1"></i>
+                    <i class="ri-checkbox-circle-line ml-2 mt-1"></i>
                     <span>ודא שכפתור "שליחה" בולט וברור</span>
                 </li>
             </ul>
