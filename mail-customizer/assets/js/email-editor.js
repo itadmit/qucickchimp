@@ -137,9 +137,22 @@ class EmailEditor {
                 },
                 body: JSON.stringify({
                     name,
-                    html
+                    html,
+                    // שימוש ב-user_id מהמשתמש המחובר או ערך ברירת מחדל 1
+                    user_id: window.currentUserId || 1,
+                    // אם יש campaign_id, שלח גם אותו
+                    campaign_id: window.currentCampaignId || null
                 })
             });
+            
+            if (!response.ok) {
+                throw new Error(`שגיאת HTTP: ${response.status}`);
+            }
+            
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error(`התגובה אינה בפורמט JSON (${contentType})`);
+            }
             
             const data = await response.json();
             
@@ -186,6 +199,7 @@ class EmailEditor {
             this.confirmSave.disabled = false;
             
             // הצגת הודעת שגיאה
+            console.error('שגיאה בשמירת התבנית:', error);
             alert('שגיאה בשמירת התבנית: ' + error.message);
         }
     }
@@ -336,72 +350,23 @@ class EmailEditor {
         // יצירת חלון חדש עם תצוגה מקדימה של המייל
         const previewWindow = window.open('', '_blank');
         
-        // יצירת מסמך HTML חדש
-        const html = `
-        <!DOCTYPE html>
-        <html dir="rtl" lang="he">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>תצוגה מקדימה של המייל</title>
-            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@100..900&display=swap" rel="stylesheet">
-            <style>
-                body {
-                    font-family: 'Noto Sans Hebrew', Arial, sans-serif;
-                    line-height: 1.6;
-                    color: #333;
-                    max-width: 600px;
-                    margin: 0 auto;
-                    padding: 20px;
-                }
-                
-                h1, h2, h3, h4, h5, h6, p, div, span, button {
-                    font-family: 'Noto Sans Hebrew', Arial, sans-serif;
-                }
-                
-                img {
-                    max-width: 100%;
-                    height: auto;
-                }
-                
-                .preview-header {
-                    text-align: center;
-                    padding: 10px;
-                    background-color: #f5f5f5;
-                    margin-bottom: 20px;
-                    border-radius: 4px;
-                }
-                
-                .preview-footer {
-                    text-align: center;
-                    padding: 10px;
-                    background-color: #f5f5f5;
-                    margin-top: 20px;
-                    font-size: 0.8rem;
-                    color: #666;
-                    border-radius: 4px;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="preview-header">
+        // השג את ה-HTML המלא מוכן לשליחה
+        const html = this.getHTML();
+        
+        // הוסף כותרת לתצוגה המקדימה
+        const previewHtml = html.replace('<body>', `<body>
+            <div style="text-align: center; padding: 10px; background-color: #f5f5f5; margin-bottom: 20px; border-radius: 4px;">
                 <h2>תצוגה מקדימה של המייל</h2>
                 <p>כך ייראה המייל בתיבת הדואר של הנמען</p>
-            </div>
-            
-            <div class="email-content">
-                ${this.previewContainer.innerHTML}
-            </div>
-            
-            <div class="preview-footer">
+            </div>`
+        ).replace('</body>', `
+            <div style="text-align: center; padding: 10px; background-color: #f5f5f5; margin-top: 20px; font-size: 0.8rem; color: #666; border-radius: 4px;">
                 <p>זוהי תצוגה מקדימה בלבד. ייתכנו הבדלים בהצגת המייל בתוכנות דואר שונות.</p>
             </div>
-        </body>
-        </html>
-        `;
+        </body>`);
         
         previewWindow.document.open();
-        previewWindow.document.write(html);
+        previewWindow.document.write(previewHtml);
         previewWindow.document.close();
     }
     
@@ -892,7 +857,55 @@ class EmailEditor {
     }
     
     getHTML() {
-        return this.previewContainer.innerHTML;
+        // כאן אנחנו יוצרים HTML מאורגן ונקי שמוכן לשליחה במייל
+        // במקום להשתמש ב-innerHTML של מיכל התצוגה המקדימה שכולל אלמנטים של ממשק המשתמש
+        
+        if (this.sections.length === 0) {
+            return '';
+        }
+        
+        // יצירת קוד HTML נקי
+        let htmlContent = '';
+        
+        // עבור על כל הסקשנים והוסף את ה-HTML שלהם
+        this.sections.forEach(section => {
+            // קח את התוכן של הסקשן בלבד, ללא אלמנטים של הממשק
+            const sectionContent = this.renderSectionContent(section);
+            htmlContent += `<section>${sectionContent}</section>\n`;
+        });
+        
+        // תבנית HTML מלאה
+        const fullHTML = `<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans Hebrew', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        section {
+            margin-bottom: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+${htmlContent}
+</body>
+</html>`;
+        
+        return fullHTML;
     }
 }
 
