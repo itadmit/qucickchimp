@@ -93,6 +93,13 @@
         
         <ul>
             <li>
+                <a href="domains.php" class="sidebar-link flex items-center px-4 py-3 text-gray-700 <?php echo $currentPage == 'domains.php' || $currentPage == 'send_test.php' ? 'active' : ''; ?>">
+                    <i class="ri-global-line ml-3 text-xl"></i>
+                    <span>דומיינים לדיוור</span>
+                </a>
+            </li>
+            
+            <li>
                 <a href="settings.php" class="sidebar-link flex items-center px-4 py-3 text-gray-700 <?php echo $currentPage == 'settings.php' ? 'active' : ''; ?>">
                     <i class="ri-settings-3-line ml-3 text-xl"></i>
                     <span>הגדרות</span>

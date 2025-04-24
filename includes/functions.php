@@ -295,7 +295,7 @@ function getUserSmtpSettings($pdo, $userId) {
 }
 
 /**
- * Send email using PHPMailer with SMTP if enabled
+ * Send email using PHPMailer with SMTP if enabled or Mailgun service
  * 
  * @param string $to          Recipient email
  * @param string $subject     Email subject
@@ -305,13 +305,53 @@ function getUserSmtpSettings($pdo, $userId) {
  * @param string $replyTo     Reply-To email (optional)
  * @param array  $attachments Attachments array (optional)
  * @param array  $smtpSettings SMTP settings array (optional)
+ * @param string $customDomain Custom domain for Mailgun (optional)
  * 
  * @return bool True on success, false on failure
  */
-function sendEmail($to, $subject, $message, $fromName = '', $fromEmail = '', $replyTo = '', $attachments = [], $smtpSettings = []) {
-    // Use PHPMailer
+function sendEmail($to, $subject, $message, $fromName = '', $fromEmail = '', $replyTo = '', $attachments = [], $smtpSettings = [], $customDomain = null) {
     require_once ROOT_PATH . '/vendor/autoload.php';
     
+    // בדיקה איזה שירות מייל להשתמש
+    $mailService = defined('MAIL_SERVICE') ? MAIL_SERVICE : 'smtp';
+    
+    // השתמש ב-Mailgun אם הוגדר
+    if ($mailService === 'mailgun' && defined('MAILGUN_ENABLED') && MAILGUN_ENABLED) {
+        try {
+            // טעינת המחלקה אם היא לא נטענה כבר
+            if (!class_exists('MailgunMailer')) {
+                require_once ROOT_PATH . '/includes/MailgunMailer.php';
+            }
+            
+            // קביעת פרטי השולח
+            $fromName = $fromName ?: MAILGUN_FROM_NAME;
+            $fromEmail = $fromEmail ?: MAILGUN_FROM_EMAIL;
+            
+            // יצירת אובייקט Mailgun ושליחת האימייל
+            $mailgun = new MailgunMailer(
+                MAILGUN_API_KEY,
+                MAILGUN_DOMAIN,
+                MAILGUN_FROM_NAME,
+                MAILGUN_FROM_EMAIL
+            );
+            
+            return $mailgun->sendEmail(
+                $to, 
+                $subject, 
+                $message, 
+                $fromName, 
+                $fromEmail, 
+                $replyTo, 
+                $attachments, 
+                $customDomain
+            );
+        } catch (Exception $e) {
+            error_log('Mailgun error: ' . $e->getMessage());
+            // אם נכשל, ננסה לשלוח באמצעות SMTP כגיבוי
+        }
+    }
+    
+    // השתמש ב-SMTP אם Mailgun לא זמין או נכשל
     $mail = new PHPMailer\PHPMailer\PHPMailer(true);
     
     try {
@@ -384,4 +424,168 @@ function sendEmail($to, $subject, $message, $fromName = '', $fromEmail = '', $re
         error_log('Mail sending error: ' . $e->getMessage());
         return false;
     }
+}
+
+/**
+ * מנהל דומיין של לקוח למערכת הדיוור
+ * יכול להוסיף, לעדכן או לבדוק דומיין
+ * 
+ * @param int $userId מזהה המשתמש
+ * @param string $domain הדומיין לניהול
+ * @param string $action פעולה לביצוע (add/update/verify)
+ * 
+ * @return array מידע על הפעולה (הצלחה/כישלון ונתונים)
+ */
+function manageCustomerDomain($userId, $domain, $action = 'verify') {
+    require_once ROOT_PATH . '/vendor/autoload.php';
+    
+    // וודא שהמשתמש קיים
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    
+    if (!$stmt->fetch()) {
+        return [
+            'success' => false,
+            'message' => 'משתמש לא קיים'
+        ];
+    }
+    
+    // בדוק אם שירות Mailgun פעיל
+    if (!defined('MAILGUN_ENABLED') || !MAILGUN_ENABLED) {
+        return [
+            'success' => false,
+            'message' => 'שירות Mailgun אינו מופעל'
+        ];
+    }
+    
+    try {
+        // טען את מחלקת Mailgun
+        if (!class_exists('MailgunMailer')) {
+            require_once ROOT_PATH . '/includes/MailgunMailer.php';
+        }
+        
+        // יצירת אובייקט Mailgun
+        $mailgun = new MailgunMailer(
+            MAILGUN_API_KEY,
+            MAILGUN_DOMAIN,
+            MAILGUN_FROM_NAME,
+            MAILGUN_FROM_EMAIL
+        );
+        
+        // פעולות אפשריות
+        switch ($action) {
+            case 'add':
+                // הוסף דומיין חדש
+                $result = $mailgun->addDomain($domain);
+                
+                if ($result) {
+                    // שמור את הדומיין בבסיס הנתונים
+                    $stmt = $pdo->prepare("INSERT INTO user_domains (user_id, domain, verified) VALUES (?, ?, 0)");
+                    $stmt->execute([$userId, $domain]);
+                    
+                    // קבל רשומות DNS לאימות
+                    $records = $mailgun->getDomainVerificationRecords($domain);
+                    
+                    return [
+                        'success' => true,
+                        'message' => 'הדומיין נוסף בהצלחה, אנא אמת באמצעות הוספת רשומות DNS',
+                        'domain' => $domain,
+                        'dns_records' => $records
+                    ];
+                }
+                
+                return [
+                    'success' => false,
+                    'message' => 'נכשל בהוספת הדומיין'
+                ];
+                
+            case 'verify':
+                // בדוק אם הדומיין אומת
+                $verified = $mailgun->isDomainVerified($domain);
+                
+                if ($verified) {
+                    // עדכן את סטטוס האימות בבסיס הנתונים
+                    $stmt = $pdo->prepare("UPDATE user_domains SET verified = 1 WHERE user_id = ? AND domain = ?");
+                    $stmt->execute([$userId, $domain]);
+                    
+                    return [
+                        'success' => true,
+                        'message' => 'הדומיין אומת בהצלחה',
+                        'verified' => true
+                    ];
+                }
+                
+                return [
+                    'success' => true,
+                    'message' => 'הדומיין עדיין לא אומת',
+                    'verified' => false,
+                    'dns_records' => $mailgun->getDomainVerificationRecords($domain)
+                ];
+                
+            case 'list':
+                // החזר את כל הדומיינים של המשתמש
+                $stmt = $pdo->prepare("SELECT domain, verified, created_at FROM user_domains WHERE user_id = ?");
+                $stmt->execute([$userId]);
+                $domains = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                return [
+                    'success' => true,
+                    'domains' => $domains
+                ];
+                
+            default:
+                return [
+                    'success' => false,
+                    'message' => 'פעולה לא מוכרת'
+                ];
+        }
+    } catch (Exception $e) {
+        error_log('Mailgun domain management error: ' . $e->getMessage());
+        
+        return [
+            'success' => false,
+            'message' => 'שגיאה בניהול הדומיין: ' . $e->getMessage()
+        ];
+    }
+}
+
+/**
+ * שולח אימייל עם דומיין מותאם אישית של הלקוח
+ * 
+ * @param int $userId מזהה המשתמש
+ * @param string $to כתובת הנמען
+ * @param string $subject נושא האימייל
+ * @param string $message תוכן האימייל (HTML)
+ * @param string $fromName שם השולח
+ * @param string $fromEmail כתובת האימייל של השולח (חייב להיות בדומיין המאומת)
+ * @param string $replyTo כתובת לתשובה (אופציונלי)
+ * @param array $attachments קבצים מצורפים (אופציונלי)
+ * 
+ * @return bool אמת אם נשלח בהצלחה, שקר אחרת
+ */
+function sendCustomDomainEmail($userId, $to, $subject, $message, $fromName, $fromEmail, $replyTo = '', $attachments = []) {
+    // וודא שיש דומיין מאומת למשתמש
+    global $pdo;
+    
+    // חלץ את הדומיין מכתובת האימייל של השולח
+    $domain = substr(strrchr($fromEmail, "@"), 1);
+    
+    if (empty($domain)) {
+        error_log('Invalid sender email format');
+        return false;
+    }
+    
+    // בדוק אם הדומיין מאומת עבור המשתמש
+    $stmt = $pdo->prepare("SELECT verified FROM user_domains WHERE user_id = ? AND domain = ?");
+    $stmt->execute([$userId, $domain]);
+    $domainInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$domainInfo || !$domainInfo['verified']) {
+        error_log('Domain not verified for this user: ' . $domain);
+        return false;
+    }
+    
+    // שלח את האימייל באמצעות הדומיין המותאם אישית
+    return sendEmail($to, $subject, $message, $fromName, $fromEmail, $replyTo, $attachments, [], $domain);
 }
