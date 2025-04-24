@@ -6,6 +6,7 @@
 let mediaSelectionCallback = null;
 let currentLandingPageId = null;
 let selectedImage = null;
+let isUploading = false; // דגל למניעת העלאות כפולות
 
 // פתיחת המודל של ספריית המדיה
 function openMediaLibrary(landingPageId, onSelect) {
@@ -27,7 +28,6 @@ function openMediaLibrary(landingPageId, onSelect) {
     loadExistingMedia(landingPageId);
 }
 
-// טעינת תמונות קיימות מהשרת
 // טעינת תמונות קיימות מהשרת
 function loadExistingMedia(landingPageId) {
     // איפוס גריד המדיה
@@ -65,70 +65,15 @@ function loadExistingMedia(landingPageId) {
         })
         .then(data => {
             console.log("Parsed API data:", data);
-            
-            if (data.success && data.files && data.files.length > 0) {
+            if (data.success && data.files && Array.isArray(data.files)) {
                 console.log("Will render", data.files.length, "images");
-                
-                // נקה את הגריד
-                mediaGrid.innerHTML = '';
-                
-                // הוסף כל תמונה לגריד
-                data.files.forEach(file => {
-                    console.log("Adding image:", file.filename);
-                    
-                    const item = document.createElement('div');
-                    item.className = 'media-item border rounded-lg overflow-hidden cursor-pointer hover:shadow-md';
-                    item.setAttribute('data-url', file.url);
-                    
-                    item.innerHTML = `
-                        <div style="height: 150px; background-color: #f9f9f9; overflow: hidden;">
-                            <img src="${file.url}" alt="${file.filename}" class="object-cover w-full h-full">
-                        </div>
-                        <div class="p-2 text-sm truncate text-center">${file.filename}</div>
-                    `;
-                    
-                    // הוסף אירוע לחיצה
-                    item.addEventListener('click', () => {
-                        console.log("Image clicked:", file.url);
-                        
-                        // הסר בחירה קודמת
-                        document.querySelectorAll('.media-item').forEach(el => {
-                            el.classList.remove('ring-2', 'ring-indigo-500');
-                        });
-                        
-                        // סמן את התמונה הנוכחית
-                        item.classList.add('ring-2', 'ring-indigo-500');
-                        
-                        // שמור את התמונה הנבחרת
-                        selectedImage = file.url;
-                        
-                        // שנה את טקסט הכפתור
-                        const uploadBtn = document.getElementById('upload-media-button');
-                        if (uploadBtn) {
-                            uploadBtn.textContent = 'בחר תמונה זו';
-                        }
-                    });
-                    
-                    // לחיצה כפולה בוחרת ישירות
-                    item.addEventListener('dblclick', () => {
-                        if (mediaSelectionCallback) {
-                            console.log("Double click, selecting image:", file.url);
-                            mediaSelectionCallback(file.url);
-                            closeMediaLibrary();
-                        }
-                    });
-                    
-                    // הוסף את התמונה לגריד
-                    mediaGrid.appendChild(item);
-                });
-                
-                console.log("Finished rendering media grid");
+                renderMediaGrid(data.files);
             } else {
-                console.log("No images found or API error");
+                console.log("API returned error or no files:", data.message);
                 mediaGrid.innerHTML = `
                     <div class="text-center py-10 text-gray-500 col-span-4">
-                        <i class="ri-image-line text-3xl mb-2"></i>
-                        <p>אין תמונות בספרייה. העלה תמונות חדשות כדי להתחיל.</p>
+                        <i class="ri-error-warning-line text-3xl mb-2"></i>
+                        <p>${data.message || 'שגיאה בטעינת תמונות'}</p>
                     </div>
                 `;
             }
@@ -175,22 +120,25 @@ function renderMediaGrid(files) {
     files.forEach((file, index) => {
         console.log(`Processing file ${index+1}/${files.length}:`, file.filename);
         
+        // Convert HTTP to HTTPS if needed
+        const secureUrl = file.url.replace('http://', 'https://');
+        
         // יצירת אלמנט עבור תמונה
         const mediaItem = document.createElement('div');
         mediaItem.className = 'media-item border rounded-lg overflow-hidden cursor-pointer hover:shadow-md';
-        mediaItem.setAttribute('data-url', file.url);
+        mediaItem.setAttribute('data-url', secureUrl);
         
         // הגדרת התוכן של האלמנט
         mediaItem.innerHTML = `
             <div style="height: 150px; background-color: #f9f9f9; overflow: hidden;">
-                <img src="${file.url}" alt="${file.filename}" class="object-cover w-full h-full">
+                <img src="${secureUrl}" alt="${file.filename}" class="object-cover w-full h-full">
             </div>
             <div class="p-2 text-sm truncate text-center">${file.filename}</div>
         `;
         
         // הוספת אירוע לחיצה
         mediaItem.addEventListener('click', () => {
-            console.log("Media item clicked:", file.url);
+            console.log("Media item clicked:", secureUrl);
             
             // הסרת סימון מכל התמונות
             document.querySelectorAll('.media-item.selected').forEach(item => {
@@ -201,13 +149,13 @@ function renderMediaGrid(files) {
             mediaItem.classList.add('selected', 'ring-2', 'ring-indigo-500');
             
             // שמירת התמונה הנבחרת
-            selectedImage = file.url;
+            selectedImage = secureUrl;
             
             // אופציונלי: לחיצה כפולה בוחרת ושולחת
             mediaItem.addEventListener('dblclick', () => {
                 if (mediaSelectionCallback) {
-                    console.log("Double click - selecting image:", file.url);
-                    mediaSelectionCallback(file.url);
+                    console.log("Double click - selecting image:", secureUrl);
+                    mediaSelectionCallback(secureUrl);
                     closeMediaLibrary();
                 }
             });
@@ -359,52 +307,55 @@ function closeMediaLibrary() {
 }
 
 // העלאת קובץ לשרת
-// העלאת קובץ לשרת
 function uploadMedia(file) {
+    if (isUploading) {
+        console.log("Upload already in progress, ignoring request");
+        return;
+    }
+    
     const uploadButton = document.getElementById('upload-media-button');
     
     // יצירת FormData
     const formData = new FormData();
     formData.append('file', file);
-    // שימוש במשתנה הגלובלי במקום במשתנה המקומי
     formData.append('landing_page_id', currentLandingPageId);
     
     // שינוי טקסט הכפתור
     uploadButton.disabled = true;
     uploadButton.innerHTML = '<i class="ri-loader-4-line animate-spin mr-1"></i> מעלה...';
+    isUploading = true;
     
     // שליחת הקובץ
     fetch('/upload.php', {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         console.log("Parsed API data:", data);
         if (data.success) {
-            console.log("About to render media grid with", data.files.length, "files");
-            renderMediaGrid(data.files); // וודא שהשורה הזו קיימת
-            console.log("Render media grid function called");
+            // רענון הגריד
+            loadExistingMedia(currentLandingPageId);
         } else {
-            console.log("API returned error:", data.message);
-            mediaGrid.innerHTML = `
-                <div class="text-center py-10 text-gray-500 col-span-4">
-                    <i class="ri-error-warning-line text-3xl mb-2"></i>
-                    <p>${data.message || 'שגיאה בטעינת תמונות'}</p>
-                </div>
-            `;
+            throw new Error(data.message || 'שגיאה בהעלאת התמונה');
         }
     })
-    
-    
     .catch(error => {
+        console.error('Upload error:', error);
+        alert('שגיאה בהעלאת התמונה: ' + error.message);
+    })
+    .finally(() => {
+        // איפוס הכפתור והדגל
         uploadButton.disabled = false;
         uploadButton.innerHTML = 'העלאת תמונה';
-        alert('שגיאה בהעלאת התמונה: ' + error.message);
+        isUploading = false;
     });
 }
-
-
 
 // חשיפת פונקציות לשימוש גלובלי
 window.mediaLibrary = {

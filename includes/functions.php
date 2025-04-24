@@ -232,3 +232,156 @@ function hasReachedPlanLimits($pdo, $userId, $limitType) {
             return false;
     }
 }
+
+/**
+ * Generate a random slug for landing pages
+ *
+ * @param PDO $pdo Database connection
+ * @return string Unique random slug
+ */
+function generateRandomSlug($pdo) {
+    $characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    $length = 5; // אורך ה-slug
+    
+    do {
+        $slug = '';
+        for ($i = 0; $i < $length; $i++) {
+            $slug .= $characters[rand(0, strlen($characters) - 1)];
+        }
+        
+        // בדיקה שה-slug אינו כבר קיים
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM landing_pages WHERE slug = ?");
+        $stmt->execute([$slug]);
+        $exists = $stmt->fetchColumn();
+    } while ($exists > 0);
+    
+    return $slug;
+}
+
+/**
+ * Get user SMTP settings
+ * 
+ * @param PDO $pdo Database connection
+ * @param int $userId User ID
+ * @return array SMTP settings
+ */
+function getUserSmtpSettings($pdo, $userId) {
+    $settings = [
+        'smtp_enabled' => false,
+        'smtp_host' => SMTP_HOST,
+        'smtp_port' => SMTP_PORT,
+        'smtp_security' => SMTP_SECURITY,
+        'smtp_username' => SMTP_USERNAME,
+        'smtp_password' => SMTP_PASSWORD,
+        'sender_name' => SMTP_FROM_NAME,
+        'sender_email' => SMTP_FROM_EMAIL
+    ];
+    
+    try {
+        $stmt = $pdo->prepare("SELECT setting_key, setting_value FROM user_settings WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        
+        while ($row = $stmt->fetch()) {
+            if (array_key_exists($row['setting_key'], $settings)) {
+                $settings[$row['setting_key']] = $row['setting_value'];
+            }
+        }
+    } catch (PDOException $e) {
+        // Table might not exist yet, use default settings
+        error_log('Error getting user SMTP settings: ' . $e->getMessage());
+    }
+    
+    return $settings;
+}
+
+/**
+ * Send email using PHPMailer with SMTP if enabled
+ * 
+ * @param string $to          Recipient email
+ * @param string $subject     Email subject
+ * @param string $message     Email message (HTML)
+ * @param string $fromName    Sender name (optional)
+ * @param string $fromEmail   Sender email (optional)
+ * @param string $replyTo     Reply-To email (optional)
+ * @param array  $attachments Attachments array (optional)
+ * @param array  $smtpSettings SMTP settings array (optional)
+ * 
+ * @return bool True on success, false on failure
+ */
+function sendEmail($to, $subject, $message, $fromName = '', $fromEmail = '', $replyTo = '', $attachments = [], $smtpSettings = []) {
+    // Use PHPMailer
+    require_once ROOT_PATH . '/vendor/autoload.php';
+    
+    $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+    
+    try {
+        // Get sender details from parameters or defaults
+        $fromName = $fromName ?: ($smtpSettings['sender_name'] ?? SMTP_FROM_NAME);
+        $fromEmail = $fromEmail ?: ($smtpSettings['sender_email'] ?? SMTP_FROM_EMAIL);
+        
+        // Use SMTP if enabled in config or settings
+        $smtpEnabled = !empty($smtpSettings['smtp_enabled']) ? (bool)$smtpSettings['smtp_enabled'] : SMTP_ENABLED;
+        
+        if ($smtpEnabled) {
+            $mail->isSMTP();
+            $mail->Host = $smtpSettings['smtp_host'] ?? SMTP_HOST;
+            $mail->Port = $smtpSettings['smtp_port'] ?? SMTP_PORT;
+            
+            $security = $smtpSettings['smtp_security'] ?? SMTP_SECURITY;
+            if ($security) {
+                $mail->SMTPSecure = $security;
+            }
+            
+            $username = $smtpSettings['smtp_username'] ?? SMTP_USERNAME;
+            $password = $smtpSettings['smtp_password'] ?? SMTP_PASSWORD;
+            
+            if ($username && $password) {
+                $mail->SMTPAuth = true;
+                $mail->Username = $username;
+                $mail->Password = $password;
+            }
+            
+            // For debugging
+            // $mail->SMTPDebug = 2;
+        }
+        
+        // Set sender
+        $mail->setFrom($fromEmail, $fromName);
+        
+        // Set reply-to if provided
+        if ($replyTo) {
+            $mail->addReplyTo($replyTo);
+        }
+        
+        // Add recipient
+        $mail->addAddress($to);
+        
+        // Set email content
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $message;
+        $mail->CharSet = 'UTF-8';
+        
+        // Add plain text version
+        $mail->AltBody = strip_tags(str_replace(['<br>', '<br/>', '<br />'], "\n", $message));
+        
+        // Add attachments if any
+        if (!empty($attachments)) {
+            foreach ($attachments as $attachment) {
+                if (isset($attachment['path']) && file_exists($attachment['path'])) {
+                    $mail->addAttachment(
+                        $attachment['path'],
+                        $attachment['name'] ?? basename($attachment['path'])
+                    );
+                }
+            }
+        }
+        
+        // Send the email
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        error_log('Mail sending error: ' . $e->getMessage());
+        return false;
+    }
+}

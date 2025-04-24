@@ -24,7 +24,7 @@
             </div>
             <div class="mx-4 border-r border-gray-300 h-6"></div>
             <h1 class="text-lg font-medium text-gray-800">
-                עריכת דף נחיתה: <span class="font-bold"><?php echo htmlspecialchars($landingPage['title']); ?></span>
+                עריכת דף נחיתה: <span class="font-bold"><?php echo htmlspecialchars($landingPage['title'], ENT_QUOTES | ENT_HTML5, 'UTF-8'); ?></span>
             </h1>
         </div>
         
@@ -179,7 +179,7 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">כותרת הדף</label>
-                        <input type="text" id="page-title" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500" value="<?php echo htmlspecialchars($landingPage['title']); ?>">
+                        <input type="text" id="page-title" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500" value="<?php echo htmlspecialchars($landingPage['title'], ENT_QUOTES | ENT_HTML5, 'UTF-8'); ?>">
                     </div>
                     
                     <div>
@@ -257,7 +257,7 @@
                     $thumbnailPath = 'templates/' . $template['thumbnail'];
                     if (file_exists($thumbnailPath)): 
                     ?>
-                        <img src="<?php echo $thumbnailPath; ?>" alt="<?php echo htmlspecialchars($template['name']); ?>" class="w-full h-32 object-contain">
+                        <img src="<?php echo $thumbnailPath; ?>" alt="<?php echo htmlspecialchars($template['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'); ?>" class="w-full h-32 object-contain">
                     <?php else: ?>
                         <div class="w-full h-32 bg-gray-100 flex items-center justify-center">
                             <i class="ri-layout-line text-4xl text-gray-400"></i>
@@ -265,7 +265,7 @@
                     <?php endif; ?>
                 </div>
                 <div class="p-3">
-                    <h4 class="font-bold"><?php echo htmlspecialchars($template['name']); ?></h4>
+                    <h4 class="font-bold"><?php echo htmlspecialchars($template['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'); ?></h4>
                 </div>
             </div>
             <?php endforeach; ?>

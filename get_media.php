@@ -56,10 +56,15 @@ try {
         
         if (!empty($mediaFiles)) {
             foreach ($mediaFiles as $file) {
+                // Check if the file_path is an S3 URL
+                $url = (strpos($file['file_path'], 's3.') !== false) ? 
+                       $file['file_path'] : 
+                       getFileUrl($slug, $file['filename']);
+                
                 $response['files'][] = [
                     'id' => $file['id'],
                     'filename' => $file['filename'],
-                    'url' => getFileUrl($slug, $file['filename']),
+                    'url' => $url,
                     'type' => $file['file_type'],
                     'size' => formatFileSize($file['file_size']),
                     'created_at' => $file['created_at']
@@ -69,26 +74,59 @@ try {
         
         // Check if media table doesn't exist or no DB entries
         if (empty($response['files'])) {
-            // Try to get files from directory
-            $uploadDir = getUploadDir($slug);
-            if (is_dir($uploadDir)) {
-                $files = scandir($uploadDir);
-                foreach ($files as $file) {
-                    if ($file != '.' && $file != '..' && is_file($uploadDir . '/' . $file)) {
-                        // Check if it's an image
-                        $fileInfo = pathinfo($file);
+            // אם S3 מופעל, נסה לקבל קבצים מ-S3
+            if (defined('USE_S3_STORAGE') && USE_S3_STORAGE) {
+                require_once ROOT_PATH . '/includes/s3.php';
+                $s3 = getS3Client();
+                
+                try {
+                    $objects = $s3->listObjects([
+                        'Bucket' => S3_BUCKET,
+                        'Prefix' => $slug . '/'
+                    ]);
+                    
+                    foreach ($objects['Contents'] as $object) {
+                        $filename = basename($object['Key']);
+                        $fileInfo = pathinfo($filename);
                         $extension = strtolower($fileInfo['extension'] ?? '');
                         
                         if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-                            $filePath = $uploadDir . '/' . $file;
                             $response['files'][] = [
-                                'id' => 0, // No DB ID
-                                'filename' => $file,
-                                'url' => getFileUrl($slug, $file),
-                                'type' => mime_content_type($filePath),
-                                'size' => formatFileSize(filesize($filePath)),
-                                'created_at' => date('Y-m-d H:i:s', filemtime($filePath))
+                                'id' => 0,
+                                'filename' => $filename,
+                                'url' => S3_URL . '/' . $object['Key'],
+                                'type' => 'image/' . $extension,
+                                'size' => formatFileSize($object['Size']),
+                                'created_at' => $object['LastModified']->format('Y-m-d H:i:s')
                             ];
+                        }
+                    }
+                } catch (Exception $e) {
+                    error_log('S3 Error: ' . $e->getMessage());
+                }
+            }
+            
+            // אם אין קבצים מ-S3, נסה לקבל מהתיקייה המקומית
+            if (empty($response['files'])) {
+                $uploadDir = getUploadDir($slug);
+                if (is_dir($uploadDir)) {
+                    $files = scandir($uploadDir);
+                    foreach ($files as $file) {
+                        if ($file != '.' && $file != '..' && is_file($uploadDir . '/' . $file)) {
+                            $fileInfo = pathinfo($file);
+                            $extension = strtolower($fileInfo['extension'] ?? '');
+                            
+                            if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                                $filePath = $uploadDir . '/' . $file;
+                                $response['files'][] = [
+                                    'id' => 0,
+                                    'filename' => $file,
+                                    'url' => getFileUrl($slug, $file),
+                                    'type' => mime_content_type($filePath),
+                                    'size' => formatFileSize(filesize($filePath)),
+                                    'created_at' => date('Y-m-d H:i:s', filemtime($filePath))
+                                ];
+                            }
                         }
                     }
                 }
@@ -98,39 +136,13 @@ try {
         $response['success'] = true;
         
     } catch (PDOException $e) {
-        // Handle case where media table doesn't exist
-        // Try to get files from directory instead
-        $uploadDir = getUploadDir($slug);
-        if (is_dir($uploadDir)) {
-            $files = scandir($uploadDir);
-            foreach ($files as $file) {
-                if ($file != '.' && $file != '..' && is_file($uploadDir . '/' . $file)) {
-                    // Check if it's an image
-                    $fileInfo = pathinfo($file);
-                    $extension = strtolower($fileInfo['extension'] ?? '');
-                    
-                    if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-                        $filePath = $uploadDir . '/' . $file;
-                        $response['files'][] = [
-                            'id' => 0, // No DB ID
-                            'filename' => $file,
-                            'url' => getFileUrl($slug, $file),
-                            'type' => mime_content_type($filePath),
-                            'size' => formatFileSize(filesize($filePath)),
-                            'created_at' => date('Y-m-d H:i:s', filemtime($filePath))
-                        ];
-                    }
-                }
-            }
-            
-            $response['success'] = true;
-        } else {
-            $response['message'] = 'תיקיית מדיה לא נמצאה';
-        }
+        error_log('Media query error: ' . $e->getMessage());
+        $response['message'] = 'שגיאה בגישה למסד הנתונים: ' . $e->getMessage();
     }
     
 } catch (PDOException $e) {
-    $response['message'] = 'שגיאה בגישה למסד הנתונים';
+    error_log('Landing page query error: ' . $e->getMessage());
+    $response['message'] = 'שגיאה בגישה למסד הנתונים: ' . $e->getMessage();
 }
 
 outputResponse($response);

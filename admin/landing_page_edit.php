@@ -124,33 +124,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get form data
     $title = sanitize($_POST['title'] ?? '');
     $description = sanitize($_POST['description'] ?? '');
-    $customSlug = sanitize($_POST['slug'] ?? '');
     $isActive = isset($_POST['is_active']) ? 1 : 0;
     
     // Validate input
     if (empty($title)) {
         $error = 'כותרת היא שדה חובה';
     } else {
-        // Use custom slug if provided, otherwise generate from title if title changed
-        if (!empty($customSlug)) {
-            // Make sure slug is URL-friendly
-            $slug = preg_replace('/[^a-z0-9\-]/', '', strtolower(str_replace(' ', '-', $customSlug)));
-        } elseif ($title != $landingPage['title']) {
-            $slug = generateSlug($pdo, $title, 'landing_pages', 'slug', $landingPageId);
-        }
+        // Keep the existing slug - no longer allowing changes
+        $slug = $landingPage['slug'];
         
         // Update landing page
         try {
             $stmt = $pdo->prepare("
                 UPDATE landing_pages 
-                SET title = ?, description = ?, slug = ?, is_active = ?, updated_at = NOW()
+                SET title = ?, description = ?, is_active = ?, updated_at = NOW()
                 WHERE id = ? AND user_id = ?
             ");
             
             $result = $stmt->execute([
                 $title,
                 $description,
-                $slug,
                 $isActive,
                 $landingPageId,
                 $userId
@@ -233,18 +226,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <p class="mt-1 text-sm text-gray-500">תיאור קצר של מטרת דף הנחיתה (לשימוש פנימי בלבד).</p>
                     </div>
                     
-                    <!-- URL Slug -->
+                    <!-- URL Slug (Read-only) -->
                     <div>
-                        <label for="slug" class="block text-sm font-medium text-gray-700 mb-1">כתובת URL</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">כתובת URL</label>
                         <div class="flex flex-row-reverse rounded-md shadow-sm">
                             <span class="inline-flex items-center px-3 py-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm" style="direction: ltr;">
                                 /landing/<?php echo APP_URL; ?>
                             </span>
-                            <input type="text" name="slug" id="slug" value="<?php echo htmlspecialchars($slug); ?>"
-                                   class="border-gray-300 flex-1 block w-full rounded-none rounded-r-md focus:ring-purple-500 focus:border-purple-500 border-r-0 py-3"
-                                   style="direction: ltr; text-align: right;">
+                            <div class="border-gray-300 flex-1 block w-full rounded-none rounded-r-md border border-r-0 py-3 bg-gray-100 px-3" style="direction: ltr; text-align: right;">
+                                <?php echo htmlspecialchars($slug); ?>
+                            </div>
+                            <button type="button" onclick="copyToClipboard('<?php echo APP_URL; ?>/landing/<?php echo htmlspecialchars($slug); ?>')" class="inline-flex items-center px-2 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-blue-600 hover:bg-gray-100">
+                                <i class="ri-file-copy-line"></i>
+                            </button>
                         </div>
-                        <p class="mt-1 text-sm text-gray-500">השאר ריק כדי ליצור באופן אוטומטי מהכותרת.</p>
+                        <p class="mt-1 text-sm text-gray-500">כתובת ה-URL נוצרת אוטומטית ואינה ניתנת לשינוי. לחץ על הכפתור כדי להעתיק את הכתובת המלאה.</p>
                     </div>
                     
                     <!-- סוויצ'ר פעיל/לא פעיל -->
@@ -351,5 +347,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </div>
+
+<script>
+// Function to copy URL to clipboard
+function copyToClipboard(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    
+    // Show a temporary message
+    const button = event.target.closest('button');
+    const originalHtml = button.innerHTML;
+    button.innerHTML = '<i class="ri-check-line"></i>';
+    setTimeout(() => {
+        button.innerHTML = originalHtml;
+    }, 2000);
+}
+</script>
 
 <?php include_once 'template/footer.php'; ?>

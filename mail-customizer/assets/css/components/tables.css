@@ -1,0 +1,39 @@
+/* עיצוב טבלאות */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+th, td {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    text-align: right;
+    color: #4b5563;
+}
+
+tr:hover {
+    background-color: #f8fafc;
+}
+
+/* עיצוב תגיות */
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+.tag-primary {
+    background-color: rgba(99, 102, 241, 0.1);
+    color: var(--primary-color);
+} 

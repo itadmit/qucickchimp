@@ -97,6 +97,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
         // Generate URL for the file
         $fileUrl = getFileUrl($slug, $filename . '.webp');
         
+        // Upload to S3 if enabled
+        if (defined('USE_S3_STORAGE') && USE_S3_STORAGE) {
+            require_once ROOT_PATH . '/includes/s3.php';
+            
+            // Generate S3 key
+            $s3Key = $slug . '/' . $filename . '.webp';
+            
+            // Upload to S3
+            $s3Url = uploadToS3($webpFilePath, $s3Key);
+            
+            if ($s3Url) {
+                $fileUrl = $s3Url;
+                // Delete local file after successful S3 upload
+                unlink($webpFilePath);
+            }
+        }
+        
         // Save file information to database
         try {
             $stmt = $pdo->prepare("
@@ -109,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
                 $userId,
                 $landingPageId,
                 $filename . '.webp',
-                $webpFilePath,
+                $fileUrl, // Store the S3 URL instead of local path
                 'image/webp',
                 filesize($webpFilePath)
             ]);

@@ -267,14 +267,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </html>
                             ";
                             
-                            // כותרות המייל
-                            $headers = "MIME-Version: 1.0\r\n";
-                            $headers .= "Content-type: text/html; charset=utf-8\r\n";
-                            $headers .= "From: " . APP_EMAIL . "\r\n";
+                            // קבלת הגדרות SMTP של המשתמש
+                            $smtpSettings = getUserSmtpSettings($pdo, $landingPage['user_id']);
                             
-                            // שליחת המייל
-                            mail($emailAddress, $subject, $message, $headers);
-                            error_log('Notification email sent to: ' . $emailAddress);
+                            // שליחת המייל באמצעות הפונקציה החדשה עם הגדרות ה-SMTP המתאימות
+                            $sent = sendEmail(
+                                $emailAddress, 
+                                $subject, 
+                                $message, 
+                                $smtpSettings['sender_name'], 
+                                $smtpSettings['sender_email'], 
+                                '', 
+                                [], 
+                                $smtpSettings
+                            );
+                            
+                            error_log('Notification email sent to: ' . $emailAddress . ($sent ? ' (success)' : ' (failed)'));
                         }
                     }
                 }

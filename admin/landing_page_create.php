@@ -76,8 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($title)) {
         $error = 'כותרת היא שדה חובה';
     } else {
-        // Generate slug from title
-        $slug = generateSlug($pdo, $title);
+        // Generate random slug instead of using title
+        $slug = generateRandomSlug($pdo);
         
         // Try to get template content if not provided
         $templateContent = '';
@@ -191,7 +191,18 @@ include_once 'template/header.php';
                 </label>
                 <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($title); ?>" required
                        class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500">
-                <p class="mt-1 text-sm text-gray-500">כותרת דף הנחיתה שלך. תופיע גם בכתובת ה-URL.</p>
+                <p class="mt-1 text-sm text-gray-500">כותרת דף הנחיתה שלך.</p>
+            </div>
+            
+            <div class="bg-blue-50 border-r-4 border-blue-500 p-4 mb-6">
+                <div class="flex">
+                    <div class="mr-1">
+                        <i class="ri-information-line text-blue-500"></i>
+                    </div>
+                    <div class="mr-3">
+                        <p class="text-sm text-blue-700">כתובת ה-URL של דף הנחיתה תיווצר באופן אוטומטי ואקראי ולא תהיה ניתנת לשינוי. אם ברצונך להשתמש בכתובת מותאמת אישית, תוכל לחבר דומיין משלך מאוחר יותר.</p>
+                    </div>
+                </div>
             </div>
             
             <!-- Description -->

@@ -67,6 +67,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $senderName = sanitize($_POST['sender_name'] ?? '');
         $senderEmail = sanitize($_POST['sender_email'] ?? '');
         $replyToEmail = sanitize($_POST['reply_to_email'] ?? '');
+        $smtpEnabled = isset($_POST['smtp_enabled']) ? 1 : 0;
+        $smtpHost = sanitize($_POST['smtp_host'] ?? '');
+        $smtpPort = (int)($_POST['smtp_port'] ?? 587);
+        $smtpSecurity = sanitize($_POST['smtp_security'] ?? 'tls');
+        $smtpUsername = sanitize($_POST['smtp_username'] ?? '');
+        $smtpPassword = sanitize($_POST['smtp_password'] ?? '');
         
         // Validate input
         if (empty($senderName)) {
@@ -77,6 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'אימייל השולח אינו תקין';
         } elseif (!empty($replyToEmail) && !filter_var($replyToEmail, FILTER_VALIDATE_EMAIL)) {
             $error = 'אימייל ה"השב ל" אינו תקין';
+        } elseif ($smtpEnabled && empty($smtpHost)) {
+            $error = 'שרת SMTP הוא שדה חובה כאשר SMTP מופעל';
         } else {
             // Update user email settings
             try {
@@ -100,8 +108,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $settings = [
                     'sender_name' => $senderName,
                     'sender_email' => $senderEmail,
-                    'reply_to_email' => $replyToEmail
+                    'reply_to_email' => $replyToEmail,
+                    'smtp_enabled' => $smtpEnabled,
+                    'smtp_host' => $smtpHost,
+                    'smtp_port' => $smtpPort,
+                    'smtp_security' => $smtpSecurity,
+                    'smtp_username' => $smtpUsername
                 ];
+                
+                // Only update password if a new one is provided
+                if (!empty($smtpPassword)) {
+                    $settings['smtp_password'] = $smtpPassword;
+                }
                 
                 foreach ($settings as $key => $value) {
                     $stmt = $pdo->prepare("
@@ -361,6 +379,73 @@ include_once 'template/header.php';
                                       class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 py-3">
                                 <p class="mt-1 text-sm text-gray-500">כתובת אימייל לקבלת תשובות (אם שונה מאימייל השולח)</p>
                             </div>
+                            
+                            <!-- SMTP Settings Toggle -->
+                            <div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="smtp_enabled" name="smtp_enabled" value="1" 
+                                          <?php echo (!empty($userSettings['smtp_enabled']) && $userSettings['smtp_enabled'] == 1) ? 'checked' : ''; ?>
+                                          class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                    <label for="smtp_enabled" class="mr-2 block text-sm font-medium text-gray-700">
+                                        הפעל שליחה באמצעות SMTP
+                                    </label>
+                                </div>
+                                <p class="mt-1 text-sm text-gray-500">השתמש בשרת SMTP ייעודי לשליחת אימיילים במקום בפונקציית PHP הרגילה</p>
+                            </div>
+                            
+                            <!-- SMTP Settings (conditionally shown) -->
+                            <div id="smtp_settings" class="border rounded-md p-4 space-y-4 bg-white <?php echo (!empty($userSettings['smtp_enabled']) && $userSettings['smtp_enabled'] == 1) ? '' : 'hidden'; ?>">
+                                <h4 class="font-medium text-gray-900">הגדרות SMTP</h4>
+                                
+                                <div>
+                                    <label for="smtp_host" class="block text-sm font-medium text-gray-700 mb-1">שרת SMTP <span class="text-red-500">*</span></label>
+                                    <input type="text" id="smtp_host" name="smtp_host" value="<?php echo htmlspecialchars($userSettings['smtp_host'] ?? SMTP_HOST); ?>"
+                                          class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 py-2">
+                                    <p class="mt-1 text-sm text-gray-500">שם השרת או כתובת IP</p>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="smtp_port" class="block text-sm font-medium text-gray-700 mb-1">פורט</label>
+                                        <input type="number" id="smtp_port" name="smtp_port" value="<?php echo htmlspecialchars($userSettings['smtp_port'] ?? SMTP_PORT); ?>"
+                                              class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 py-2">
+                                        <p class="mt-1 text-sm text-gray-500">לרוב 587 (TLS) או 465 (SSL)</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="smtp_security" class="block text-sm font-medium text-gray-700 mb-1">אבטחה</label>
+                                        <select id="smtp_security" name="smtp_security" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 py-2">
+                                            <option value="tls" <?php echo ($userSettings['smtp_security'] ?? SMTP_SECURITY) == 'tls' ? 'selected' : ''; ?>>TLS</option>
+                                            <option value="ssl" <?php echo ($userSettings['smtp_security'] ?? SMTP_SECURITY) == 'ssl' ? 'selected' : ''; ?>>SSL</option>
+                                            <option value="" <?php echo ($userSettings['smtp_security'] ?? SMTP_SECURITY) == '' ? 'selected' : ''; ?>>ללא</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="smtp_username" class="block text-sm font-medium text-gray-700 mb-1">שם משתמש</label>
+                                    <input type="text" id="smtp_username" name="smtp_username" value="<?php echo htmlspecialchars($userSettings['smtp_username'] ?? SMTP_USERNAME); ?>"
+                                          class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 py-2">
+                                </div>
+                                
+                                <div>
+                                    <label for="smtp_password" class="block text-sm font-medium text-gray-700 mb-1">סיסמה</label>
+                                    <input type="password" id="smtp_password" name="smtp_password" placeholder="<?php echo !empty($userSettings['smtp_password']) ? '••••••••' : ''; ?>"
+                                          class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 py-2">
+                                    <p class="mt-1 text-sm text-gray-500">השאר ריק כדי לשמור על הסיסמה הקיימת</p>
+                                </div>
+                                
+                                <div class="bg-blue-50 border-r-4 border-blue-500 p-4">
+                                    <div class="flex">
+                                        <div class="mr-1">
+                                            <i class="ri-information-line text-blue-500"></i>
+                                        </div>
+                                        <div class="mr-3">
+                                            <p class="text-sm text-blue-700">אם אתה משתמש ב-Amazon SES, השתמש בפרטי ההתחברות SMTP שקיבלת מ-AWS.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -373,6 +458,20 @@ include_once 'template/header.php';
                 </div>
             </div>
         </form>
+        
+        <script>
+            // Toggle SMTP settings visibility
+            document.addEventListener('DOMContentLoaded', function() {
+                const smtpToggle = document.getElementById('smtp_enabled');
+                const smtpSettings = document.getElementById('smtp_settings');
+                
+                if (smtpToggle && smtpSettings) {
+                    smtpToggle.addEventListener('change', function() {
+                        smtpSettings.classList.toggle('hidden', !this.checked);
+                    });
+                }
+            });
+        </script>
     </div>
     
     <!-- Security Tab -->

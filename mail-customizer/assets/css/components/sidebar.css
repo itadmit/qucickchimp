@@ -1,0 +1,161 @@
+.sidebar-title {
+    @apply text-xl font-bold mb-4;
+}
+
+.add-section-btn {
+    @apply flex items-center justify-center w-full gap-2 py-2.5 px-3 mb-4 bg-white text-primary border border-primary/30 rounded-md hover:bg-primary/5 transition-colors text-sm font-medium;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.add-section-btn i {
+    @apply text-lg;
+}
+
+.sidebar-item {
+    @apply flex items-center justify-between p-3 cursor-pointer transition-colors relative text-gray-700;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sidebar-item:last-child {
+    border-bottom: none;
+}
+
+.sidebar-item:hover {
+    @apply bg-gray-50;
+}
+
+.sidebar-item .section-actions {
+    @apply flex items-center gap-1 opacity-0 transition-all duration-200;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.sidebar-item:hover .section-actions {
+    @apply opacity-100;
+}
+
+.sidebar-item i {
+    @apply text-base text-gray-400;
+}
+
+.sidebar-item span {
+    @apply text-sm flex-1 line-clamp-1;
+    margin-right: 30px;
+}
+
+.sidebar-item .status {
+    @apply w-2 h-2 rounded-full bg-gray-300;
+}
+
+.sidebar-item.active {
+    @apply bg-primary/5 text-primary;
+    border-right: 3px solid var(--primary-color);
+}
+
+.sidebar-item.active .flex i {
+    @apply text-primary;
+}
+
+.sidebar-item.active .status {
+    @apply bg-primary;
+}
+
+.sidebar-item:hover .status {
+    @apply bg-primary/50;
+}
+
+/* כפתורים */
+.btn {
+    @apply px-4 py-2 rounded-lg transition-colors;
+}
+
+.btn i {
+    @apply text-xl;
+}
+
+.btn-primary {
+    @apply bg-primary text-white hover:bg-secondary;
+}
+
+.btn-secondary {
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+}
+
+.section-button {
+    @apply flex flex-col items-center justify-center p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-gray-50 transition-all;
+}
+
+.section-button i {
+    @apply text-2xl mb-2 text-gray-600;
+}
+
+.section-button span {
+    @apply text-sm font-medium text-gray-700;
+}
+
+.section-actions {
+    @apply flex items-center gap-1 transition-opacity duration-200;
+}
+
+.section-action-btn {
+    @apply p-1 rounded text-gray-400 hover:text-primary hover:bg-gray-200 transition-colors;
+}
+
+.section-action-btn.delete-btn:hover {
+    @apply text-red-500;
+}
+
+/* אקורדיון */
+.accordion {
+    @apply border border-gray-200 rounded-md overflow-hidden mb-3;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.accordion-header {
+    @apply p-3 bg-white cursor-pointer flex items-center justify-between gap-2 transition-colors;
+}
+
+.accordion-header:hover {
+    @apply bg-gray-50;
+}
+
+.accordion-header i:first-child {
+    @apply text-gray-500;
+}
+
+.accordion-content {
+    @apply p-3 border-t border-gray-200 bg-gray-50 space-y-3;
+}
+
+.accordion-content[style*="display: block"] {
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* שדות קלט */
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+    @apply w-full border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary;
+    background-color: white;
+}
+
+input[type="color"] {
+    @apply w-full h-10 rounded-md border border-gray-200 cursor-pointer;
+}
+
+label {
+    @apply block text-sm font-medium text-gray-700 mb-1.5;
+} 
